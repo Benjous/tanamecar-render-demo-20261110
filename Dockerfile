@@ -10,7 +10,7 @@ RUN composer dump-autoload --no-dev --optimize --no-scripts
 FROM php:8.4-apache
 
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends libicu-dev libzip-dev libpng-dev libjpeg62-turbo-dev libfreetype6-dev \
+    && apt-get install -y --no-install-recommends libicu-dev libzip-dev libpng-dev libjpeg62-turbo-dev libfreetype6-dev libpq-dev libonig-dev \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install -j2 pdo_pgsql pgsql mbstring bcmath exif gd zip intl opcache \
     && a2enmod rewrite headers \
