@@ -1,0 +1,149 @@
+﻿@import "tailwindcss";
+
+@font-face {
+    font-family: "Inter";
+    src: url("/fonts/inter-variable.woff2") format("woff2");
+    font-weight: 100 900;
+    font-style: normal;
+    font-display: swap;
+}
+
+:root {
+    color-scheme: light;
+    --brand-50: #f4f7f9;
+    --brand-100: #e2e8f0;
+    --brand-200: #c7dde8;
+    --brand-300: #8fb8cc;
+    --brand-400: #4e93b5;
+    --brand-500: #1c6d9c;
+    --brand-600: #1c6d9c;
+    --brand-700: #175171;
+    --brand-800: #12445a;
+    --brand-900: #0b2e3d;
+    --brand-950: #071e28;
+    --accent-50: #f4fbe9;
+    --accent-100: #e6f5c9;
+    --accent-500: #7eba27;
+    --accent-600: #6aa31d;
+    --accent-700: #557f18;
+    --success: #15803d;
+    --warning: #c2410c;
+    --danger: #be123c;
+    --info: #0369a1;
+    --surface-page: #f4f7f9;
+    --surface-card: #ffffff;
+    --surface-raised: #ffffff;
+    --text-strong: #0f172a;
+    --text-muted: #475569;
+    --line: #e2e8f0;
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --shadow-1: 0 1px 2px rgba(15, 23, 42, 0.06);
+    --shadow-2: 0 8px 24px rgba(23, 81, 113, 0.08);
+    --shadow-3: 0 20px 48px rgba(15, 23, 42, 0.16);
+}
+
+@theme {
+    --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --color-brand-50: var(--brand-50);
+    --color-brand-100: var(--brand-100);
+    --color-brand-200: var(--brand-200);
+    --color-brand-300: var(--brand-300);
+    --color-brand-400: var(--brand-400);
+    --color-brand-500: var(--brand-500);
+    --color-brand-600: var(--brand-600);
+    --color-brand-700: var(--brand-700);
+    --color-brand-800: var(--brand-800);
+    --color-brand-900: var(--brand-900);
+    --color-brand-950: var(--brand-950);
+    --color-accent-50: var(--accent-50);
+    --color-accent-100: var(--accent-100);
+    --color-accent-500: var(--accent-500);
+    --color-accent-600: var(--accent-600);
+    --color-accent-700: var(--accent-700);
+    --color-success: var(--success);
+    --color-warning: var(--warning);
+    --color-danger: var(--danger);
+    --color-info: var(--info);
+}
+
+@layer base {
+    html { scroll-behavior: smooth; overflow-x: hidden; color-scheme: light; }
+    body {
+        font-family: var(--font-sans);
+        background: var(--surface-page);
+        color: var(--text-strong);
+        overflow-x: hidden;
+        font-variant-numeric: tabular-nums;
+    }
+    * { scrollbar-width: thin; scrollbar-color: var(--brand-300) transparent; }
+    *::-webkit-scrollbar { width: 8px; height: 8px; }
+    *::-webkit-scrollbar-thumb { background: var(--brand-300); border-radius: 999px; }
+    :focus-visible { outline: 2px solid var(--brand-500); outline-offset: 2px; }
+    @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
+    }
+}
+
+@layer components {
+    .tc-card {
+        @apply rounded-2xl border shadow-[var(--shadow-2)];
+        background: var(--surface-card);
+        border-color: var(--line);
+        color: var(--text-strong);
+    }
+    .tc-input {
+        @apply w-full rounded-xl border px-3 py-2 text-sm outline-none transition duration-150 focus:border-brand-500 focus:ring-2 focus:ring-brand-100 disabled:text-slate-500;
+        background: var(--surface-raised);
+        border-color: var(--line);
+        color: var(--text-strong);
+    }
+    .tc-input::placeholder { color: var(--text-muted); }
+    .tc-label { @apply mb-1 block text-xs font-semibold uppercase tracking-wide; color: var(--text-muted); }
+    .tc-btn, .tc-btn-primary, .tc-btn-secondary, .tc-btn-danger { @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold transition duration-150 focus:outline-none focus:ring-2 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-60; }
+    .tc-btn-primary { @apply bg-brand-700 text-white hover:bg-brand-800 focus:ring-brand-300; }
+    .tc-btn-secondary { @apply border bg-white text-slate-700 hover:bg-slate-50 focus:ring-slate-200; border-color: var(--line); }
+    .tc-btn-danger { @apply bg-rose-600 text-white hover:bg-rose-700 focus:ring-rose-200; }
+    .tc-table { @apply w-full border-collapse text-left text-[13px]; min-width: max-content; }
+    .tc-table thead th { @apply border-b px-3 py-2 text-[11px] font-bold uppercase tracking-wider text-brand-800; background: var(--brand-50); border-color: var(--line); white-space: nowrap; line-height: 1.25; }
+    .tc-table tbody td { @apply border-b px-3 py-2 align-middle text-slate-700; border-color: var(--line); white-space: nowrap; line-height: 1.25; }
+    .tc-table tbody tr { @apply transition-colors duration-150; }
+    .tc-table tbody tr:hover { background: var(--brand-50); }
+}
+
+.text-slate-400 { color: #64748b !important; }
+.text-slate-500 { color: #475569 !important; }
+
+@media (min-width: 2560px) { html { font-size: 17px; } }
+@media (min-width: 3200px) { html { font-size: 18px; } }
+.bigscreen main { max-width: 3600px; margin-inline: auto; }
+.bigscreen .tc-card { box-shadow: none; }
+.bigscreen .text-2xl { font-size: 2.25rem; }
+.bigscreen .text-3xl { font-size: 3rem; }
+
+@media print {
+    header, nav, aside, .no-print { display: none !important; }
+    body { background: #fff !important; }
+    main { padding: 0 !important; }
+    .tc-card { box-shadow: none !important; border: 0 !important; }
+}
+
+/* PROFESSIONAL TABLES */
+.tc-table { font-size: 13px; }
+.tc-table thead th { padding: 8px 12px; font-size: 11px; white-space: nowrap; }
+.tc-table tbody td { padding: 8px 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tc-table tbody tr { height: 40px; }
+.tc-table .tc-btn-secondary, .tc-table .tc-btn-danger, .tc-table .tc-btn-primary { padding: 4px 8px; font-size: 11px; }
+@media (max-width: 767px) {
+    .tc-table thead th, .tc-table tbody td { white-space: normal; }
+}
+
+/* GLOBAL DATA TABLES */
+.tc-card table { font-size: 13px; }
+.tc-card table thead th { padding: 8px 12px; font-size: 11px; white-space: nowrap; }
+.tc-card table tbody td { padding: 8px 12px; }
+.tc-card table tbody tr { height: 40px; }
+@media (max-width: 767px) {
+    .tc-card table thead th, .tc-card table tbody td { white-space: normal; }
+}

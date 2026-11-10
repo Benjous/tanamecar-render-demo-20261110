@@ -1,0 +1,4553 @@
+{
+  "contrat_templates": {
+    "key": "contrat_templates",
+    "table": "contract_templates",
+    "label": "Contrat Templates",
+    "icon": "folder",
+    "fields": [
+      {
+        "name": "entity_type",
+        "source": "entity_related_id",
+        "label": "Entité",
+        "type": "text",
+        "kind": "column",
+        "input": "select",
+        "required": false,
+        "options": [
+          {
+            "label": "Entities list",
+            "value": "Entities list"
+          }
+        ],
+        "relation": null,
+        "display": true,
+        "readonly": false
+      },
+      {
+        "name": "page_orientation",
+        "source": "page_orientation",
+        "label": "Orientation de la page",
+        "type": "text",
+        "kind": "column",
+        "input": "select",
+        "required": true,
+        "options": [
+          {
+            "label": "Portrait",
+            "value": "portrait"
+          },
+          {
+            "label": "Landscape",
+            "value": "landscape"
+          }
+        ],
+        "relation": null,
+        "display": true,
+        "readonly": false
+      },
+      {
+        "name": "page_size",
+        "source": "page_size",
+        "label": "Format de page",
+        "type": "text",
+        "kind": "column",
+        "input": "select",
+        "required": true,
+        "options": [
+          {
+            "label": "A3",
+            "value": "A3"
+          },
+          {
+            "label": "A4",
+            "value": "A4"
+          },
+          {
+            "label": "A5",
+            "value": "A5"
+          },
+          {
+            "label": "Reçu (thermique)",
+            "value": "receipt-thermal"
+          }
+        ],
+        "relation": null,
+        "display": true,
+        "readonly": false
+      },
+      {
+        "name": "template_html",
+        "source": "template",
+        "label": "Modèle",
+        "type": "text",
+        "kind": "column",
+        "input": "textarea",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": false,
+        "readonly": false
+      },
+      {
+        "name": "name",
+        "source": "name",
+        "label": "Nom",
+        "type": "text",
+        "kind": "column",
+        "input": "text",
+        "required": true,
+        "options": [],
+        "relation": null,
+        "display": true,
+        "readonly": false
+      },
+      {
+        "name": "created_at",
+        "source": "created_at",
+        "label": "Créé le",
+        "type": "timestamptz",
+        "kind": "column",
+        "input": "datetime",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": false,
+        "readonly": false
+      },
+      {
+        "name": "created_by",
+        "source": "user_id",
+        "label": "Créé par",
+        "type": "bigint",
+        "kind": "column",
+        "input": "text",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": false,
+        "readonly": false
+      }
+    ],
+    "list": [
+      "entity_type",
+      "page_orientation",
+      "page_size",
+      "name"
+    ]
+  },
+  "couleurs": {
+    "key": "couleurs",
+    "table": "colors",
+    "label": "Couleurs",
+    "icon": "folder",
+    "fields": [
+      {
+        "name": "hex",
+        "source": "couleur",
+        "label": "Couleur",
+        "type": "text",
+        "kind": "column",
+        "input": "text",
+        "required": true,
+        "options": [],
+        "relation": null,
+        "display": true,
+        "readonly": false
+      },
+      {
+        "name": "name",
+        "source": "name",
+        "label": "Nom",
+        "type": "text",
+        "kind": "column",
+        "input": "text",
+        "required": true,
+        "options": [],
+        "relation": null,
+        "display": false,
+        "readonly": false
+      },
+      {
+        "name": "created_at",
+        "source": "created_at",
+        "label": "Créé le",
+        "type": "timestamptz",
+        "kind": "column",
+        "input": "datetime",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": false,
+        "readonly": false
+      },
+      {
+        "name": "created_by",
+        "source": "user_id",
+        "label": "Créé par",
+        "type": "bigint",
+        "kind": "column",
+        "input": "text",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": false,
+        "readonly": false
+      }
+    ],
+    "list": [
+      "hex"
+    ]
+  },
+  "credits_vehicules": {
+    "key": "credits_vehicules",
+    "table": "vehicle_credits",
+    "label": "Crédits véhicules",
+    "icon": "pending_actions",
+    "fields": [
+      {
+        "name": "payment_date",
+        "source": "date_de_paiement",
+        "label": "Date de paiement",
+        "type": "date",
+        "kind": "column",
+        "input": "date",
+        "required": true,
+        "options": [],
+        "relation": null,
+        "display": true,
+        "readonly": false
+      },
+      {
+        "name": "amount",
+        "source": "montant",
+        "label": "Montant",
+        "type": "numeric(12,2)",
+        "kind": "column",
+        "input": "number",
+        "required": true,
+        "options": [],
+        "relation": null,
+        "display": true,
+        "readonly": false
+      },
+      {
+        "name": "observations",
+        "source": "observations",
+        "label": "Observations",
+        "type": "text",
+        "kind": "column",
+        "input": "textarea",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": true,
+        "readonly": false
+      },
+      {
+        "name": "vehicle_id",
+        "source": "vehicule",
+        "label": "Véhicule",
+        "type": "bigint",
+        "kind": "column",
+        "input": "relation",
+        "required": true,
+        "options": [],
+        "relation": "slv_vehicules",
+        "display": true,
+        "readonly": false
+      },
+      {
+        "name": "display_name",
+        "source": "name",
+        "label": "Nom",
+        "type": "text",
+        "kind": "column",
+        "input": "text",
+        "required": true,
+        "options": [],
+        "relation": null,
+        "display": false,
+        "readonly": false
+      },
+      {
+        "name": "created_at",
+        "source": "created_at",
+        "label": "Créé le",
+        "type": "timestamptz",
+        "kind": "column",
+        "input": "datetime",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": false,
+        "readonly": false
+      },
+      {
+        "name": "created_by",
+        "source": "user_id",
+        "label": "Créé par",
+        "type": "bigint",
+        "kind": "column",
+        "input": "text",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": false,
+        "readonly": false
+      }
+    ],
+    "list": [
+      "payment_date",
+      "amount",
+      "observations",
+      "vehicle_id"
+    ]
+  },
+  "devis": {
+    "key": "devis",
+    "table": "quotes",
+    "label": "Devis",
+    "icon": "receipt",
+    "fields": [
+      {
+        "name": "cancelled_at",
+        "source": "cancelled_at",
+        "label": "Cancellation date",
+        "type": "timestamptz",
+        "kind": "column",
+        "input": "datetime",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": false,
+        "readonly": false
+      },
+      {
+        "name": "client_id",
+        "source": "client_entity_related_id",
+        "label": "Client",
+        "type": "bigint",
+        "kind": "column",
+        "input": "relation",
+        "required": true,
+        "options": [],
+        "relation": "slv_locataires",
+        "display": true,
+        "readonly": false
+      },
+      {
+        "name": "due_date",
+        "source": "date_due",
+        "label": "Date d'échéance",
+        "type": "date",
+        "kind": "column",
+        "input": "date",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": false,
+        "readonly": false
+      },
+      {
+        "name": "issued_at",
+        "source": "date_issued",
+        "label": "Date d'émission",
+        "type": "date",
+        "kind": "column",
+        "input": "date",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": true,
+        "readonly": false
+      },
+      {
+        "name": "discount_percent",
+        "source": "discount_percentage",
+        "label": "Discount %",
+        "type": "numeric(5,2)",
+        "kind": "column",
+        "input": "number",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": false,
+        "readonly": false
+      },
+      {
+        "name": "discount_value",
+        "source": "discount_value",
+        "label": "Discount Value",
+        "type": "numeric(12,2)",
+        "kind": "column",
+        "input": "number",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": false,
+        "readonly": false
+      },
+      {
+        "name": "note",
+        "source": "note",
+        "label": "Note",
+        "type": "text",
+        "kind": "column",
+        "input": "textarea",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": false,
+        "readonly": false
+      },
+      {
+        "name": "status",
+        "source": "order_status",
+        "label": "Statut",
+        "type": "text",
+        "kind": "column",
+        "input": "select",
+        "required": false,
+        "options": [
+          {
+            "label": "Brouillon",
+            "value": "draft"
+          },
+          {
+            "label": "Confirmé",
+            "value": "confirmed"
+          },
+          {
+            "label": "Annulé",
+            "value": "canceled"
+          }
+        ],
+        "relation": null,
+        "display": true,
+        "readonly": false
+      },
+      {
+        "name": "reference",
+        "source": "reference",
+        "label": "Référence",
+        "type": "varchar(32)",
+        "kind": "column",
+        "input": "text",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": true,
+        "readonly": false
+      },
+      {
+        "name": "session_ref",
+        "source": "session_entity_related_id",
+        "label": "Session",
+        "type": "jsonb",
+        "kind": "legacy",
+        "input": "relation",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": false,
+        "readonly": false
+      },
+      {
+        "name": "subject",
+        "source": "subject",
+        "label": "Objet",
+        "type": "text",
+        "kind": "column",
+        "input": "text",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": false,
+        "readonly": false
+      },
+      {
+        "name": "subtotal",
+        "source": "subtotal",
+        "label": "Sous-total",
+        "type": "numeric(12,2)",
+        "kind": "column",
+        "input": "number",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": false,
+        "readonly": false
+      },
+      {
+        "name": "subtotal_before_discount",
+        "source": "subtotal_before_discount",
+        "label": "Sous-total brut",
+        "type": "numeric(12,2)",
+        "kind": "column",
+        "input": "number",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": false,
+        "readonly": false
+      },
+      {
+        "name": "total",
+        "source": "total",
+        "label": "Total",
+        "type": "numeric(12,2)",
+        "kind": "column",
+        "input": "number",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": true,
+        "readonly": false
+      },
+      {
+        "name": "total_before_discount",
+        "source": "total_before_discount",
+        "label": "Total brut",
+        "type": "numeric(12,2)",
+        "kind": "column",
+        "input": "number",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": false,
+        "readonly": false
+      },
+      {
+        "name": "validated",
+        "source": "validated",
+        "label": "Validé",
+        "type": "boolean",
+        "kind": "column",
+        "input": "checkbox",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": false,
+        "readonly": false
+      },
+      {
+        "name": "vat_value",
+        "source": "vat_value",
+        "label": "TVA",
+        "type": "numeric(12,2)",
+        "kind": "column",
+        "input": "number",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": true,
+        "readonly": false
+      },
+      {
+        "name": "warehouse_ref",
+        "source": "warehouse_entity_related_id",
+        "label": "Warehouse",
+        "type": "jsonb",
+        "kind": "legacy",
+        "input": "relation",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": false,
+        "readonly": false
+      },
+      {
+        "name": "display_name",
+        "source": "name",
+        "label": "Nom",
+        "type": "text",
+        "kind": "column",
+        "input": "text",
+        "required": true,
+        "options": [],
+        "relation": null,
+        "display": false,
+        "readonly": false
+      },
+      {
+        "name": "created_at",
+        "source": "created_at",
+        "label": "Créé le",
+        "type": "timestamptz",
+        "kind": "column",
+        "input": "datetime",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": false,
+        "readonly": false
+      },
+      {
+        "name": "created_by",
+        "source": "user_id",
+        "label": "Créé par",
+        "type": "bigint",
+        "kind": "column",
+        "input": "text",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": false,
+        "readonly": false
+      }
+    ],
+    "list": [
+      "client_id",
+      "issued_at",
+      "status",
+      "reference",
+      "total",
+      "vat_value"
+    ]
+  },
+  "devis_templates": {
+    "key": "devis_templates",
+    "table": "quote_templates",
+    "label": "Devis Templates",
+    "icon": "folder",
+    "fields": [
+      {
+        "name": "entity_type",
+        "source": "entity_related_id",
+        "label": "Entité",
+        "type": "text",
+        "kind": "column",
+        "input": "select",
+        "required": false,
+        "options": [
+          {
+            "label": "Entities list",
+            "value": "Entities list"
+          }
+        ],
+        "relation": null,
+        "display": true,
+        "readonly": false
+      },
+      {
+        "name": "page_orientation",
+        "source": "page_orientation",
+        "label": "Orientation de la page",
+        "type": "text",
+        "kind": "column",
+        "input": "select",
+        "required": true,
+        "options": [
+          {
+            "label": "Portrait",
+            "value": "portrait"
+          },
+          {
+            "label": "Landscape",
+            "value": "landscape"
+          }
+        ],
+        "relation": null,
+        "display": true,
+        "readonly": false
+      },
+      {
+        "name": "page_size",
+        "source": "page_size",
+        "label": "Format de page",
+        "type": "text",
+        "kind": "column",
+        "input": "select",
+        "required": true,
+        "options": [
+          {
+            "label": "A3",
+            "value": "A3"
+          },
+          {
+            "label": "A4",
+            "value": "A4"
+          },
+          {
+            "label": "A5",
+            "value": "A5"
+          },
+          {
+            "label": "Reçu (thermique)",
+            "value": "receipt-thermal"
+          }
+        ],
+        "relation": null,
+        "display": true,
+        "readonly": false
+      },
+      {
+        "name": "template_html",
+        "source": "template",
+        "label": "Modèle",
+        "type": "text",
+        "kind": "column",
+        "input": "textarea",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": false,
+        "readonly": false
+      },
+      {
+        "name": "name",
+        "source": "name",
+        "label": "Nom",
+        "type": "text",
+        "kind": "column",
+        "input": "text",
+        "required": true,
+        "options": [],
+        "relation": null,
+        "display": true,
+        "readonly": false
+      },
+      {
+        "name": "created_at",
+        "source": "created_at",
+        "label": "Créé le",
+        "type": "timestamptz",
+        "kind": "column",
+        "input": "datetime",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": false,
+        "readonly": false
+      },
+      {
+        "name": "created_by",
+        "source": "user_id",
+        "label": "Créé par",
+        "type": "bigint",
+        "kind": "column",
+        "input": "text",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": false,
+        "readonly": false
+      }
+    ],
+    "list": [
+      "entity_type",
+      "page_orientation",
+      "page_size",
+      "name"
+    ]
+  },
+  "facture_templates": {
+    "key": "facture_templates",
+    "table": "invoice_templates",
+    "label": "Facture Templates",
+    "icon": "folder",
+    "fields": [
+      {
+        "name": "entity_type",
+        "source": "entity_related_id",
+        "label": "Entité",
+        "type": "text",
+        "kind": "column",
+        "input": "select",
+        "required": false,
+        "options": [
+          {
+            "label": "Entities list",
+            "value": "Entities list"
+          }
+        ],
+        "relation": null,
+        "display": true,
+        "readonly": false
+      },
+      {
+        "name": "page_orientation",
+        "source": "page_orientation",
+        "label": "Orientation de la page",
+        "type": "text",
+        "kind": "column",
+        "input": "select",
+        "required": true,
+        "options": [
+          {
+            "label": "Portrait",
+            "value": "portrait"
+          },
+          {
+            "label": "Landscape",
+            "value": "landscape"
+          }
+        ],
+        "relation": null,
+        "display": true,
+        "readonly": false
+      },
+      {
+        "name": "page_size",
+        "source": "page_size",
+        "label": "Format de page",
+        "type": "text",
+        "kind": "column",
+        "input": "select",
+        "required": true,
+        "options": [
+          {
+            "label": "A3",
+            "value": "A3"
+          },
+          {
+            "label": "A4",
+            "value": "A4"
+          },
+          {
+            "label": "A5",
+            "value": "A5"
+          },
+          {
+            "label": "Reçu (thermique)",
+            "value": "receipt-thermal"
+          }
+        ],
+        "relation": null,
+        "display": true,
+        "readonly": false
+      },
+      {
+        "name": "template_html",
+        "source": "template",
+        "label": "Modèle",
+        "type": "text",
+        "kind": "column",
+        "input": "textarea",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": false,
+        "readonly": false
+      },
+      {
+        "name": "name",
+        "source": "name",
+        "label": "Nom",
+        "type": "text",
+        "kind": "column",
+        "input": "text",
+        "required": true,
+        "options": [],
+        "relation": null,
+        "display": true,
+        "readonly": false
+      },
+      {
+        "name": "created_at",
+        "source": "created_at",
+        "label": "Créé le",
+        "type": "timestamptz",
+        "kind": "column",
+        "input": "datetime",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": false,
+        "readonly": false
+      },
+      {
+        "name": "created_by",
+        "source": "user_id",
+        "label": "Créé par",
+        "type": "bigint",
+        "kind": "column",
+        "input": "text",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": false,
+        "readonly": false
+      }
+    ],
+    "list": [
+      "entity_type",
+      "page_orientation",
+      "page_size",
+      "name"
+    ]
+  },
+  "factures": {
+    "key": "factures",
+    "table": "invoices",
+    "label": "Factures",
+    "icon": "receipt_long",
+    "fields": [
+      {
+        "name": "cancelled_at",
+        "source": "cancelled_at",
+        "label": "Cancellation date",
+        "type": "timestamptz",
+        "kind": "column",
+        "input": "datetime",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": false,
+        "readonly": false
+      },
+      {
+        "name": "client_id",
+        "source": "client_entity_related_id",
+        "label": "Client",
+        "type": "bigint",
+        "kind": "column",
+        "input": "relation",
+        "required": true,
+        "options": [],
+        "relation": "slv_locataires",
+        "display": true,
+        "readonly": false
+      },
+      {
+        "name": "due_date",
+        "source": "date_due",
+        "label": "Date d'échéance",
+        "type": "date",
+        "kind": "column",
+        "input": "date",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": false,
+        "readonly": false
+      },
+      {
+        "name": "issued_at",
+        "source": "date_issued",
+        "label": "Date d'émission",
+        "type": "date",
+        "kind": "column",
+        "input": "date",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": true,
+        "readonly": false
+      },
+      {
+        "name": "discount_percent",
+        "source": "discount_percentage",
+        "label": "Discount %",
+        "type": "numeric(5,2)",
+        "kind": "column",
+        "input": "number",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": false,
+        "readonly": false
+      },
+      {
+        "name": "discount_value",
+        "source": "discount_value",
+        "label": "Discount Value",
+        "type": "numeric(12,2)",
+        "kind": "column",
+        "input": "number",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": false,
+        "readonly": false
+      },
+      {
+        "name": "note",
+        "source": "note",
+        "label": "Note",
+        "type": "text",
+        "kind": "column",
+        "input": "textarea",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": false,
+        "readonly": false
+      },
+      {
+        "name": "status",
+        "source": "order_status",
+        "label": "Statut",
+        "type": "text",
+        "kind": "column",
+        "input": "select",
+        "required": false,
+        "options": [
+          {
+            "label": "Brouillon",
+            "value": "draft"
+          },
+          {
+            "label": "Confirmé",
+            "value": "confirmed"
+          },
+          {
+            "label": "Annulé",
+            "value": "canceled"
+          }
+        ],
+        "relation": null,
+        "display": true,
+        "readonly": false
+      },
+      {
+        "name": "file_reference",
+        "source": "ref_dossier",
+        "label": "Réf. Dossier",
+        "type": "text",
+        "kind": "column",
+        "input": "text",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": true,
+        "readonly": false
+      },
+      {
+        "name": "reference",
+        "source": "reference",
+        "label": "Référence",
+        "type": "varchar(32)",
+        "kind": "column",
+        "input": "text",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": true,
+        "readonly": false
+      },
+      {
+        "name": "session_ref",
+        "source": "session_entity_related_id",
+        "label": "Session",
+        "type": "jsonb",
+        "kind": "legacy",
+        "input": "relation",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": false,
+        "readonly": false
+      },
+      {
+        "name": "subject",
+        "source": "subject",
+        "label": "Objet",
+        "type": "text",
+        "kind": "column",
+        "input": "text",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": false,
+        "readonly": false
+      },
+      {
+        "name": "subtotal",
+        "source": "subtotal",
+        "label": "Sous-total",
+        "type": "numeric(12,2)",
+        "kind": "column",
+        "input": "number",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": false,
+        "readonly": false
+      },
+      {
+        "name": "subtotal_before_discount",
+        "source": "subtotal_before_discount",
+        "label": "Sous-total brut",
+        "type": "numeric(12,2)",
+        "kind": "column",
+        "input": "number",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": false,
+        "readonly": false
+      },
+      {
+        "name": "total",
+        "source": "total",
+        "label": "Total",
+        "type": "numeric(12,2)",
+        "kind": "column",
+        "input": "number",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": true,
+        "readonly": false
+      },
+      {
+        "name": "total_before_discount",
+        "source": "total_before_discount",
+        "label": "Total brut",
+        "type": "numeric(12,2)",
+        "kind": "column",
+        "input": "number",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": false,
+        "readonly": false
+      },
+      {
+        "name": "validated",
+        "source": "validated",
+        "label": "Validé",
+        "type": "boolean",
+        "kind": "column",
+        "input": "checkbox",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": false,
+        "readonly": false
+      },
+      {
+        "name": "vat_value",
+        "source": "vat_value",
+        "label": "TVA",
+        "type": "numeric(12,2)",
+        "kind": "column",
+        "input": "number",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": true,
+        "readonly": false
+      },
+      {
+        "name": "warehouse_ref",
+        "source": "warehouse_entity_related_id",
+        "label": "Warehouse",
+        "type": "jsonb",
+        "kind": "legacy",
+        "input": "relation",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": false,
+        "readonly": false
+      },
+      {
+        "name": "display_name",
+        "source": "name",
+        "label": "Nom",
+        "type": "text",
+        "kind": "column",
+        "input": "text",
+        "required": true,
+        "options": [],
+        "relation": null,
+        "display": false,
+        "readonly": false
+      },
+      {
+        "name": "created_at",
+        "source": "created_at",
+        "label": "Créé le",
+        "type": "timestamptz",
+        "kind": "column",
+        "input": "datetime",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": false,
+        "readonly": false
+      },
+      {
+        "name": "created_by",
+        "source": "user_id",
+        "label": "Créé par",
+        "type": "bigint",
+        "kind": "column",
+        "input": "text",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": false,
+        "readonly": false
+      }
+    ],
+    "list": [
+      "client_id",
+      "issued_at",
+      "status",
+      "file_reference",
+      "reference",
+      "total",
+      "vat_value"
+    ]
+  },
+  "loueurs": {
+    "key": "loueurs",
+    "table": "lessors",
+    "label": "Loueurs",
+    "icon": "folder",
+    "fields": [
+      {
+        "name": "name",
+        "source": "nom",
+        "label": "Nom",
+        "type": "text",
+        "kind": "column",
+        "input": "text",
+        "required": true,
+        "options": [],
+        "relation": null,
+        "display": false,
+        "readonly": false
+      },
+      {
+        "name": "legacy_name",
+        "source": "name",
+        "label": "Nom",
+        "type": "text",
+        "kind": "column",
+        "input": "text",
+        "required": true,
+        "options": [],
+        "relation": null,
+        "display": true,
+        "readonly": false
+      },
+      {
+        "name": "created_at",
+        "source": "created_at",
+        "label": "Créé le",
+        "type": "timestamptz",
+        "kind": "column",
+        "input": "datetime",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": false,
+        "readonly": false
+      },
+      {
+        "name": "created_by",
+        "source": "user_id",
+        "label": "Créé par",
+        "type": "bigint",
+        "kind": "column",
+        "input": "text",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": false,
+        "readonly": false
+      }
+    ],
+    "list": [
+      "legacy_name"
+    ]
+  },
+  "maisons_de_credit": {
+    "key": "maisons_de_credit",
+    "table": "credit_houses",
+    "label": "Maisons de crédit",
+    "icon": "folder",
+    "fields": [
+      {
+        "name": "name",
+        "source": "maison_de_credit",
+        "label": "Maison de credit",
+        "type": "text",
+        "kind": "column",
+        "input": "text",
+        "required": true,
+        "options": [],
+        "relation": null,
+        "display": false,
+        "readonly": false
+      },
+      {
+        "name": "legacy_name",
+        "source": "name",
+        "label": "Nom",
+        "type": "text",
+        "kind": "column",
+        "input": "text",
+        "required": true,
+        "options": [],
+        "relation": null,
+        "display": true,
+        "readonly": false
+      },
+      {
+        "name": "created_at",
+        "source": "created_at",
+        "label": "Créé le",
+        "type": "timestamptz",
+        "kind": "column",
+        "input": "datetime",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": false,
+        "readonly": false
+      },
+      {
+        "name": "created_by",
+        "source": "user_id",
+        "label": "Créé par",
+        "type": "bigint",
+        "kind": "column",
+        "input": "text",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": false,
+        "readonly": false
+      }
+    ],
+    "list": [
+      "legacy_name"
+    ]
+  },
+  "prestations": {
+    "key": "prestations",
+    "table": "services",
+    "label": "Prestations",
+    "icon": "folder",
+    "fields": [
+      {
+        "name": "active",
+        "source": "active",
+        "label": "Activé",
+        "type": "boolean",
+        "kind": "column",
+        "input": "checkbox",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": true,
+        "readonly": false
+      },
+      {
+        "name": "barcode",
+        "source": "barcode",
+        "label": "Code-barre",
+        "type": "varchar(64)",
+        "kind": "column",
+        "input": "text",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": false,
+        "readonly": false
+      },
+      {
+        "name": "code",
+        "source": "code",
+        "label": "Code",
+        "type": "text",
+        "kind": "column",
+        "input": "text",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": false,
+        "readonly": false
+      },
+      {
+        "name": "description",
+        "source": "description",
+        "label": "Description",
+        "type": "text",
+        "kind": "column",
+        "input": "textarea",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": false,
+        "readonly": false
+      },
+      {
+        "name": "name",
+        "source": "designation",
+        "label": "Désignation",
+        "type": "text",
+        "kind": "column",
+        "input": "text",
+        "required": true,
+        "options": [],
+        "relation": null,
+        "display": false,
+        "readonly": false
+      },
+      {
+        "name": "favorite",
+        "source": "favorite",
+        "label": "Préféré",
+        "type": "boolean",
+        "kind": "column",
+        "input": "checkbox",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": false,
+        "readonly": false
+      },
+      {
+        "name": "manage_stock",
+        "source": "manage_stock",
+        "label": "Manage stock",
+        "type": "boolean",
+        "kind": "column",
+        "input": "checkbox",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": false,
+        "readonly": false
+      },
+      {
+        "name": "min_stock",
+        "source": "min_stock",
+        "label": "Stock min",
+        "type": "numeric(14,2)",
+        "kind": "column",
+        "input": "number",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": false,
+        "readonly": false
+      },
+      {
+        "name": "price",
+        "source": "price",
+        "label": "Prix",
+        "type": "numeric(12,2)",
+        "kind": "column",
+        "input": "number",
+        "required": true,
+        "options": [],
+        "relation": null,
+        "display": true,
+        "readonly": false
+      },
+      {
+        "name": "purchase_price",
+        "source": "purchase_price",
+        "label": "Prix d'achat",
+        "type": "numeric(12,2)",
+        "kind": "column",
+        "input": "number",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": false,
+        "readonly": false
+      },
+      {
+        "name": "reference",
+        "source": "reference",
+        "label": "Référence",
+        "type": "varchar(32)",
+        "kind": "column",
+        "input": "text",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": true,
+        "readonly": false
+      },
+      {
+        "name": "product_type",
+        "source": "type",
+        "label": "Type",
+        "type": "text",
+        "kind": "column",
+        "input": "select",
+        "required": false,
+        "options": [
+          {
+            "label": "Matière première",
+            "value": "raw_material"
+          },
+          {
+            "label": "Produit composé",
+            "value": "compound_product"
+          },
+          {
+            "label": "Produit fini",
+            "value": "finished_product"
+          },
+          {
+            "label": "Service",
+            "value": "service"
+          }
+        ],
+        "relation": null,
+        "display": false,
+        "readonly": false
+      },
+      {
+        "name": "unit",
+        "source": "unit",
+        "label": "Unité",
+        "type": "text",
+        "kind": "column",
+        "input": "select",
+        "required": false,
+        "options": [
+          {
+            "label": "mm",
+            "value": "mm"
+          },
+          {
+            "label": "cm",
+            "value": "cm"
+          },
+          {
+            "label": "m",
+            "value": "m"
+          },
+          {
+            "label": "m²",
+            "value": "m2"
+          },
+          {
+            "label": "g",
+            "value": "g"
+          },
+          {
+            "label": "Kg",
+            "value": "kg"
+          },
+          {
+            "label": "L",
+            "value": "l"
+          },
+          {
+            "label": "m³",
+            "value": "m3"
+          },
+          {
+            "label": "Boite",
+            "value": "box"
+          },
+          {
+            "label": "Pièce",
+            "value": "piece"
+          }
+        ],
+        "relation": null,
+        "display": false,
+        "readonly": false
+      },
+      {
+        "name": "vat_included",
+        "source": "vat_included",
+        "label": "TVA incluse",
+        "type": "boolean",
+        "kind": "column",
+        "input": "checkbox",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": true,
+        "readonly": false
+      },
+      {
+        "name": "vat_rate",
+        "source": "vat_rate",
+        "label": "Taux de TVA",
+        "type": "numeric(5,2)",
+        "kind": "column",
+        "input": "number",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": true,
+        "readonly": false
+      },
+      {
+        "name": "legacy_name",
+        "source": "name",
+        "label": "Nom",
+        "type": "text",
+        "kind": "column",
+        "input": "text",
+        "required": true,
+        "options": [],
+        "relation": null,
+        "display": true,
+        "readonly": false
+      },
+      {
+        "name": "created_at",
+        "source": "created_at",
+        "label": "Créé le",
+        "type": "timestamptz",
+        "kind": "column",
+        "input": "datetime",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": false,
+        "readonly": false
+      },
+      {
+        "name": "created_by",
+        "source": "user_id",
+        "label": "Créé par",
+        "type": "bigint",
+        "kind": "column",
+        "input": "text",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": false,
+        "readonly": false
+      }
+    ],
+    "list": [
+      "active",
+      "price",
+      "reference",
+      "vat_included",
+      "vat_rate",
+      "legacy_name"
+    ]
+  },
+  "slv_categories": {
+    "key": "slv_categories",
+    "table": "vehicle_categories",
+    "label": "Catégories",
+    "icon": "folder",
+    "fields": [
+      {
+        "name": "name",
+        "source": "categorie",
+        "label": "Catégorie",
+        "type": "text",
+        "kind": "column",
+        "input": "text",
+        "required": true,
+        "options": [],
+        "relation": null,
+        "display": true,
+        "readonly": false
+      },
+      {
+        "name": "legacy_name",
+        "source": "name",
+        "label": "Nom",
+        "type": "text",
+        "kind": "column",
+        "input": "text",
+        "required": true,
+        "options": [],
+        "relation": null,
+        "display": false,
+        "readonly": false
+      },
+      {
+        "name": "created_at",
+        "source": "created_at",
+        "label": "Créé le",
+        "type": "timestamptz",
+        "kind": "column",
+        "input": "datetime",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": false,
+        "readonly": false
+      },
+      {
+        "name": "created_by",
+        "source": "user_id",
+        "label": "Créé par",
+        "type": "bigint",
+        "kind": "column",
+        "input": "text",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": false,
+        "readonly": false
+      }
+    ],
+    "list": [
+      "name"
+    ]
+  },
+  "slv_collaborateurs": {
+    "key": "slv_collaborateurs",
+    "table": "employees",
+    "label": "Collaborateurs",
+    "icon": "account_circle",
+    "fields": [
+      {
+        "name": "email",
+        "source": "email",
+        "label": "Email",
+        "type": "varchar(255)",
+        "kind": "column",
+        "input": "text",
+        "required": true,
+        "options": [],
+        "relation": null,
+        "display": true,
+        "readonly": false
+      },
+      {
+        "name": "job_title",
+        "source": "fonction",
+        "label": "Fonction",
+        "type": "text",
+        "kind": "column",
+        "input": "select",
+        "required": true,
+        "options": [
+          {
+            "label": "Secrétaire",
+            "value": "secretaire"
+          },
+          {
+            "label": "Agent",
+            "value": "agent"
+          },
+          {
+            "label": "Administration",
+            "value": "administration"
+          },
+          {
+            "label": "Gestionnaire",
+            "value": "gestionnaire"
+          },
+          {
+            "label": "Technique",
+            "value": "technique"
+          },
+          {
+            "label": "Finance",
+            "value": "finance"
+          }
+        ],
+        "relation": null,
+        "display": true,
+        "readonly": false
+      },
+      {
+        "name": "last_name",
+        "source": "nom",
+        "label": "Nom",
+        "type": "text",
+        "kind": "column",
+        "input": "text",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": false,
+        "readonly": false
+      },
+      {
+        "name": "first_name",
+        "source": "prenom",
+        "label": "Prénom",
+        "type": "text",
+        "kind": "column",
+        "input": "text",
+        "required": true,
+        "options": [],
+        "relation": null,
+        "display": false,
+        "readonly": false
+      },
+      {
+        "name": "phone",
+        "source": "telephone",
+        "label": "Téléphone",
+        "type": "varchar(32)",
+        "kind": "column",
+        "input": "text",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": true,
+        "readonly": false
+      },
+      {
+        "name": "display_name",
+        "source": "name",
+        "label": "Nom",
+        "type": "text",
+        "kind": "column",
+        "input": "text",
+        "required": true,
+        "options": [],
+        "relation": null,
+        "display": true,
+        "readonly": false
+      },
+      {
+        "name": "created_at",
+        "source": "created_at",
+        "label": "Créé le",
+        "type": "timestamptz",
+        "kind": "column",
+        "input": "datetime",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": false,
+        "readonly": false
+      },
+      {
+        "name": "created_by",
+        "source": "user_id",
+        "label": "Créé par",
+        "type": "bigint",
+        "kind": "column",
+        "input": "text",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": false,
+        "readonly": false
+      }
+    ],
+    "list": [
+      "email",
+      "job_title",
+      "phone",
+      "display_name"
+    ]
+  },
+  "slv_communication": {
+    "key": "slv_communication",
+    "table": "communications",
+    "label": "Communication",
+    "icon": "done_all",
+    "fields": [
+      {
+        "name": "all_contacts",
+        "source": "all_contact",
+        "label": "Tous les contact",
+        "type": "boolean",
+        "kind": "column",
+        "input": "checkbox",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": true,
+        "readonly": false
+      },
+      {
+        "name": "click_count",
+        "source": "click",
+        "label": "Cliquer",
+        "type": "numeric(14,2)",
+        "kind": "column",
+        "input": "number",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": true,
+        "readonly": false
+      },
+      {
+        "name": "contact_list",
+        "source": "contact_list",
+        "label": "Liste de contact",
+        "type": "jsonb",
+        "kind": "jsonb",
+        "input": "relation",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": true,
+        "readonly": false
+      },
+      {
+        "name": "delivered_count",
+        "source": "delivered",
+        "label": "Livré",
+        "type": "numeric(14,2)",
+        "kind": "column",
+        "input": "number",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": true,
+        "readonly": false
+      },
+      {
+        "name": "failed_count",
+        "source": "failed",
+        "label": "Échoué",
+        "type": "numeric(14,2)",
+        "kind": "column",
+        "input": "number",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": true,
+        "readonly": false
+      },
+      {
+        "name": "message",
+        "source": "message",
+        "label": "Message",
+        "type": "text",
+        "kind": "column",
+        "input": "textarea",
+        "required": true,
+        "options": [],
+        "relation": null,
+        "display": false,
+        "readonly": false
+      },
+      {
+        "name": "read_count",
+        "source": "read",
+        "label": "Lire",
+        "type": "numeric(14,2)",
+        "kind": "column",
+        "input": "number",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": true,
+        "readonly": false
+      },
+      {
+        "name": "reference",
+        "source": "reference",
+        "label": "Référence",
+        "type": "varchar(32)",
+        "kind": "column",
+        "input": "text",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": false,
+        "readonly": false
+      },
+      {
+        "name": "reply_count",
+        "source": "reply",
+        "label": "Réponse",
+        "type": "numeric(14,2)",
+        "kind": "column",
+        "input": "number",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": true,
+        "readonly": false
+      },
+      {
+        "name": "send_at",
+        "source": "send_at",
+        "label": "Date d'envoi",
+        "type": "timestamptz",
+        "kind": "column",
+        "input": "datetime",
+        "required": true,
+        "options": [],
+        "relation": null,
+        "display": true,
+        "readonly": false
+      },
+      {
+        "name": "sender_ref",
+        "source": "sender_id",
+        "label": "Sender",
+        "type": "text",
+        "kind": "column",
+        "input": "select",
+        "required": true,
+        "options": [
+          {
+            "label": "Sender list",
+            "value": "Sender list"
+          }
+        ],
+        "relation": null,
+        "display": true,
+        "readonly": false
+      },
+      {
+        "name": "sent_count",
+        "source": "sent",
+        "label": "Envoyé",
+        "type": "numeric(14,2)",
+        "kind": "column",
+        "input": "number",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": true,
+        "readonly": false
+      },
+      {
+        "name": "status",
+        "source": "status",
+        "label": "Statut",
+        "type": "text",
+        "kind": "column",
+        "input": "select",
+        "required": false,
+        "options": [
+          {
+            "label": "Planned",
+            "value": "planned"
+          },
+          {
+            "label": "En attente",
+            "value": "pending"
+          },
+          {
+            "label": "Sending",
+            "value": "sending"
+          },
+          {
+            "label": "Pause",
+            "value": "pause"
+          },
+          {
+            "label": "Stop",
+            "value": "stop"
+          },
+          {
+            "label": "Done",
+            "value": "done"
+          }
+        ],
+        "relation": null,
+        "display": true,
+        "readonly": false
+      },
+      {
+        "name": "subject",
+        "source": "subject",
+        "label": "Objet",
+        "type": "text",
+        "kind": "column",
+        "input": "text",
+        "required": true,
+        "options": [],
+        "relation": null,
+        "display": true,
+        "readonly": false
+      },
+      {
+        "name": "tag_list",
+        "source": "tag_list",
+        "label": "Liste d'étiquettes",
+        "type": "text[]",
+        "kind": "tags",
+        "input": "text",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": false,
+        "readonly": false
+      },
+      {
+        "name": "template_ref",
+        "source": "template_id",
+        "label": "Template ID",
+        "type": "numeric(14,2)",
+        "kind": "column",
+        "input": "number",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": false,
+        "readonly": false
+      },
+      {
+        "name": "total_count",
+        "source": "total",
+        "label": "Total",
+        "type": "numeric(14,2)",
+        "kind": "column",
+        "input": "number",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": true,
+        "readonly": false
+      },
+      {
+        "name": "display_name",
+        "source": "name",
+        "label": "Nom",
+        "type": "text",
+        "kind": "column",
+        "input": "text",
+        "required": true,
+        "options": [],
+        "relation": null,
+        "display": true,
+        "readonly": false
+      },
+      {
+        "name": "created_at",
+        "source": "created_at",
+        "label": "Créé le",
+        "type": "timestamptz",
+        "kind": "column",
+        "input": "datetime",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": false,
+        "readonly": false
+      },
+      {
+        "name": "created_by",
+        "source": "user_id",
+        "label": "Créé par",
+        "type": "bigint",
+        "kind": "column",
+        "input": "text",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": false,
+        "readonly": false
+      }
+    ],
+    "list": [
+      "all_contacts",
+      "click_count",
+      "contact_list",
+      "delivered_count",
+      "failed_count",
+      "read_count",
+      "reply_count",
+      "send_at"
+    ]
+  },
+  "slv_configurations": {
+    "key": "slv_configurations",
+    "table": "configurations",
+    "label": "Configurations",
+    "icon": "folder",
+    "fields": [
+      {
+        "name": "entity_type",
+        "source": "entity_related_id",
+        "label": "Entité",
+        "type": "text",
+        "kind": "column",
+        "input": "select",
+        "required": false,
+        "options": [
+          {
+            "label": "Entities list",
+            "value": "Entities list"
+          }
+        ],
+        "relation": null,
+        "display": true,
+        "readonly": false
+      },
+      {
+        "name": "page_orientation",
+        "source": "page_orientation",
+        "label": "Orientation de la page",
+        "type": "text",
+        "kind": "column",
+        "input": "select",
+        "required": true,
+        "options": [
+          {
+            "label": "Portrait",
+            "value": "portrait"
+          },
+          {
+            "label": "Landscape",
+            "value": "landscape"
+          }
+        ],
+        "relation": null,
+        "display": true,
+        "readonly": false
+      },
+      {
+        "name": "page_size",
+        "source": "page_size",
+        "label": "Format de page",
+        "type": "text",
+        "kind": "column",
+        "input": "select",
+        "required": true,
+        "options": [
+          {
+            "label": "A3",
+            "value": "A3"
+          },
+          {
+            "label": "A4",
+            "value": "A4"
+          },
+          {
+            "label": "A5",
+            "value": "A5"
+          },
+          {
+            "label": "Reçu (thermique)",
+            "value": "receipt-thermal"
+          }
+        ],
+        "relation": null,
+        "display": true,
+        "readonly": false
+      },
+      {
+        "name": "template_html",
+        "source": "template",
+        "label": "Modèle",
+        "type": "text",
+        "kind": "column",
+        "input": "textarea",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": false,
+        "readonly": false
+      },
+      {
+        "name": "name",
+        "source": "name",
+        "label": "Nom",
+        "type": "text",
+        "kind": "column",
+        "input": "text",
+        "required": true,
+        "options": [],
+        "relation": null,
+        "display": true,
+        "readonly": false
+      },
+      {
+        "name": "created_at",
+        "source": "created_at",
+        "label": "Créé le",
+        "type": "timestamptz",
+        "kind": "column",
+        "input": "datetime",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": false,
+        "readonly": false
+      },
+      {
+        "name": "created_by",
+        "source": "user_id",
+        "label": "Créé par",
+        "type": "bigint",
+        "kind": "column",
+        "input": "text",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": false,
+        "readonly": false
+      }
+    ],
+    "list": [
+      "entity_type",
+      "page_orientation",
+      "page_size",
+      "name"
+    ]
+  },
+  "slv_contrats": {
+    "key": "slv_contrats",
+    "table": "contracts",
+    "label": "Locations",
+    "icon": "car_rental",
+    "fields": [
+      {
+        "name": "first_driver_id",
+        "source": "1er_locataire",
+        "label": "1er conducteur",
+        "type": "bigint",
+        "kind": "column",
+        "input": "relation",
+        "required": false,
+        "options": [],
+        "relation": "slv_locataires",
+        "display": true,
+        "readonly": false
+      },
+      {
+        "name": "second_driver_id",
+        "source": "2eme_locataire",
+        "label": "2ème conducteur",
+        "type": "bigint",
+        "kind": "column",
+        "input": "relation",
+        "required": false,
+        "options": [],
+        "relation": "slv_locataires",
+        "display": false,
+        "readonly": false
+      },
+      {
+        "name": "deposit",
+        "source": "caution",
+        "label": "Caution",
+        "type": "numeric(12,2)",
+        "kind": "column",
+        "input": "number",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": false,
+        "readonly": false
+      },
+      {
+        "name": "employee_id",
+        "source": "collaborateur",
+        "label": "Agent",
+        "type": "bigint",
+        "kind": "column",
+        "input": "relation",
+        "required": false,
+        "options": [],
+        "relation": "slv_collaborateurs",
+        "display": false,
+        "readonly": false
+      },
+      {
+        "name": "client_is_main_driver",
+        "source": "conducteur_principal",
+        "label": "Conducteur principal",
+        "type": "boolean",
+        "kind": "column",
+        "input": "checkbox",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": false,
+        "readonly": false
+      },
+      {
+        "name": "departure_at",
+        "source": "date_depart",
+        "label": "Date de départ",
+        "type": "timestamptz",
+        "kind": "column",
+        "input": "datetime",
+        "required": true,
+        "options": [],
+        "relation": null,
+        "display": true,
+        "readonly": false
+      },
+      {
+        "name": "return_at",
+        "source": "date_retour",
+        "label": "Date de retour",
+        "type": "timestamptz",
+        "kind": "column",
+        "input": "datetime",
+        "required": true,
+        "options": [],
+        "relation": null,
+        "display": true,
+        "readonly": false
+      },
+      {
+        "name": "deductible",
+        "source": "franchise",
+        "label": "Franchise",
+        "type": "numeric(12,2)",
+        "kind": "column",
+        "input": "number",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": false,
+        "readonly": false
+      },
+      {
+        "name": "departure_km",
+        "source": "km_depart",
+        "label": "Km au départ",
+        "type": "numeric(14,2)",
+        "kind": "column",
+        "input": "number",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": false,
+        "readonly": false
+      },
+      {
+        "name": "return_km",
+        "source": "km_retour",
+        "label": "Km au retour",
+        "type": "numeric(14,2)",
+        "kind": "column",
+        "input": "number",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": true,
+        "readonly": false
+      },
+      {
+        "name": "departure_place",
+        "source": "lieu_depart",
+        "label": "Lieu de départ",
+        "type": "text",
+        "kind": "column",
+        "input": "text",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": false,
+        "readonly": false
+      },
+      {
+        "name": "return_place",
+        "source": "lieu_retour",
+        "label": "Lieu de retour",
+        "type": "text",
+        "kind": "column",
+        "input": "text",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": false,
+        "readonly": false
+      },
+      {
+        "name": "client_id",
+        "source": "locataire",
+        "label": "Locataire",
+        "type": "bigint",
+        "kind": "column",
+        "input": "relation",
+        "required": true,
+        "options": [],
+        "relation": "slv_locataires",
+        "display": true,
+        "readonly": false
+      },
+      {
+        "name": "days",
+        "source": "nombre_jours",
+        "label": "Nbre jours",
+        "type": "numeric(14,2)",
+        "kind": "column",
+        "input": "number",
+        "required": true,
+        "options": [],
+        "relation": null,
+        "display": true,
+        "readonly": false
+      },
+      {
+        "name": "note",
+        "source": "note",
+        "label": "Note",
+        "type": "text",
+        "kind": "column",
+        "input": "textarea",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": false,
+        "readonly": false
+      },
+      {
+        "name": "paid_amount_recorded",
+        "source": "paye",
+        "label": "Payé",
+        "type": "numeric(12,2)",
+        "kind": "recorded",
+        "input": "number",
+        "required": false,
+        "options": [],
+        "relation": "slv_paiements",
+        "display": true,
+        "readonly": true
+      },
+      {
+        "name": "daily_rate",
+        "source": "prix_jour",
+        "label": "Prix par jour",
+        "type": "numeric(12,2)",
+        "kind": "column",
+        "input": "number",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": false,
+        "readonly": false
+      },
+      {
+        "name": "total_amount",
+        "source": "prix_total",
+        "label": "Prix total",
+        "type": "numeric(12,2)",
+        "kind": "column",
+        "input": "number",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": true,
+        "readonly": false
+      },
+      {
+        "name": "returned",
+        "source": "receptionne",
+        "label": "Réceptionné",
+        "type": "boolean",
+        "kind": "column",
+        "input": "checkbox",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": true,
+        "readonly": false
+      },
+      {
+        "name": "reference",
+        "source": "reference",
+        "label": "Référence",
+        "type": "varchar(32)",
+        "kind": "column",
+        "input": "text",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": true,
+        "readonly": false
+      },
+      {
+        "name": "remaining_recorded",
+        "source": "reste",
+        "label": "Reste",
+        "type": "numeric(12,2)",
+        "kind": "recorded",
+        "input": "number",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": true,
+        "readonly": true
+      },
+      {
+        "name": "vehicle_id",
+        "source": "voiture",
+        "label": "Voiture",
+        "type": "bigint",
+        "kind": "column",
+        "input": "relation",
+        "required": false,
+        "options": [],
+        "relation": "slv_vehicules",
+        "display": true,
+        "readonly": false
+      },
+      {
+        "name": "display_name",
+        "source": "name",
+        "label": "Nom",
+        "type": "text",
+        "kind": "column",
+        "input": "text",
+        "required": true,
+        "options": [],
+        "relation": null,
+        "display": false,
+        "readonly": false
+      },
+      {
+        "name": "created_at",
+        "source": "created_at",
+        "label": "Créé le",
+        "type": "timestamptz",
+        "kind": "column",
+        "input": "datetime",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": false,
+        "readonly": false
+      },
+      {
+        "name": "created_by",
+        "source": "user_id",
+        "label": "Créé par",
+        "type": "bigint",
+        "kind": "column",
+        "input": "text",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": false,
+        "readonly": false
+      }
+    ],
+    "list": [
+      "first_driver_id",
+      "departure_at",
+      "return_at",
+      "return_km",
+      "client_id",
+      "days",
+      "paid_amount_recorded",
+      "total_amount"
+    ]
+  },
+  "slv_locataires": {
+    "key": "slv_locataires",
+    "table": "clients",
+    "label": "Clients",
+    "icon": "group",
+    "fields": [
+      {
+        "name": "address",
+        "source": "adresse",
+        "label": "Adresse",
+        "type": "text",
+        "kind": "column",
+        "input": "text",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": true,
+        "readonly": false
+      },
+      {
+        "name": "color_hex",
+        "source": "couleur",
+        "label": "Couleur",
+        "type": "char(7)",
+        "kind": "column",
+        "input": "text",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": false,
+        "readonly": false
+      },
+      {
+        "name": "birth_date",
+        "source": "date_de_naissance",
+        "label": "Date de naissance",
+        "type": "date",
+        "kind": "column",
+        "input": "date",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": true,
+        "readonly": false
+      },
+      {
+        "name": "identity_expiry_date",
+        "source": "date_expiration_identite",
+        "label": "Date d'expiration",
+        "type": "date",
+        "kind": "column",
+        "input": "date",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": true,
+        "readonly": false
+      },
+      {
+        "name": "identity_issued_at",
+        "source": "delivre_le",
+        "label": "Délivré le",
+        "type": "date",
+        "kind": "column",
+        "input": "date",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": true,
+        "readonly": false
+      },
+      {
+        "name": "email",
+        "source": "email",
+        "label": "Email",
+        "type": "varchar(255)",
+        "kind": "column",
+        "input": "text",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": true,
+        "readonly": false
+      },
+      {
+        "name": "identity_number",
+        "source": "n_identite",
+        "label": "Nº identité",
+        "type": "text",
+        "kind": "column",
+        "input": "text",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": true,
+        "readonly": false
+      },
+      {
+        "name": "license_number",
+        "source": "n_permis",
+        "label": "Nº permis",
+        "type": "text",
+        "kind": "column",
+        "input": "text",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": true,
+        "readonly": false
+      },
+      {
+        "name": "last_name",
+        "source": "nom",
+        "label": "Nom",
+        "type": "text",
+        "kind": "column",
+        "input": "text",
+        "required": true,
+        "options": [],
+        "relation": null,
+        "display": false,
+        "readonly": false
+      },
+      {
+        "name": "country_id",
+        "source": "pays",
+        "label": "Pays",
+        "type": "bigint",
+        "kind": "column",
+        "input": "relation",
+        "required": false,
+        "options": [],
+        "relation": "slv_pays",
+        "display": true,
+        "readonly": false
+      },
+      {
+        "name": "identity_country_id",
+        "source": "pays_delivrance",
+        "label": "Pays de délivrance",
+        "type": "bigint",
+        "kind": "column",
+        "input": "relation",
+        "required": false,
+        "options": [],
+        "relation": "slv_pays",
+        "display": true,
+        "readonly": false
+      },
+      {
+        "name": "first_name",
+        "source": "prenom",
+        "label": "Prénom",
+        "type": "text",
+        "kind": "column",
+        "input": "text",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": false,
+        "readonly": false
+      },
+      {
+        "name": "source_id",
+        "source": "source",
+        "label": "Source",
+        "type": "bigint",
+        "kind": "column",
+        "input": "relation",
+        "required": false,
+        "options": [],
+        "relation": "slv_sources",
+        "display": true,
+        "readonly": false
+      },
+      {
+        "name": "status",
+        "source": "statut",
+        "label": "Statut",
+        "type": "text",
+        "kind": "column",
+        "input": "select",
+        "required": false,
+        "options": [
+          {
+            "label": "Actif",
+            "value": "actif"
+          },
+          {
+            "label": "Blacklisté",
+            "value": "blackliste"
+          },
+          {
+            "label": "Inactif",
+            "value": "inactif"
+          },
+          {
+            "label": "Débiteur",
+            "value": "debiteur"
+          }
+        ],
+        "relation": null,
+        "display": true,
+        "readonly": false
+      },
+      {
+        "name": "phone",
+        "source": "telephone",
+        "label": "Téléphone",
+        "type": "varchar(32)",
+        "kind": "column",
+        "input": "text",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": true,
+        "readonly": false
+      },
+      {
+        "name": "client_type",
+        "source": "type",
+        "label": "Type",
+        "type": "text",
+        "kind": "column",
+        "input": "select",
+        "required": true,
+        "options": [
+          {
+            "label": "Particulier",
+            "value": "particulier"
+          },
+          {
+            "label": "Entreprise",
+            "value": "entreprise"
+          }
+        ],
+        "relation": null,
+        "display": true,
+        "readonly": false
+      },
+      {
+        "name": "identity_document_type",
+        "source": "type_doc_identite",
+        "label": "Type de pièce",
+        "type": "text",
+        "kind": "column",
+        "input": "select",
+        "required": false,
+        "options": [
+          {
+            "label": "CIN",
+            "value": "cin"
+          },
+          {
+            "label": "Passport",
+            "value": "passport"
+          },
+          {
+            "label": "Carte de séjour",
+            "value": "carte_de_sejour"
+          },
+          {
+            "label": "ICE",
+            "value": "ice"
+          }
+        ],
+        "relation": null,
+        "display": true,
+        "readonly": false
+      },
+      {
+        "name": "display_name",
+        "source": "name",
+        "label": "Nom complet",
+        "type": "text",
+        "kind": "column",
+        "input": "text",
+        "required": true,
+        "options": [],
+        "relation": null,
+        "display": true,
+        "readonly": false
+      },
+      {
+        "name": "created_at",
+        "source": "created_at",
+        "label": "Créé le",
+        "type": "timestamptz",
+        "kind": "column",
+        "input": "datetime",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": false,
+        "readonly": false
+      },
+      {
+        "name": "created_by",
+        "source": "user_id",
+        "label": "Créé par",
+        "type": "bigint",
+        "kind": "column",
+        "input": "text",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": false,
+        "readonly": false
+      }
+    ],
+    "list": [
+      "address",
+      "birth_date",
+      "identity_expiry_date",
+      "identity_issued_at",
+      "email",
+      "identity_number",
+      "license_number",
+      "country_id"
+    ]
+  },
+  "slv_maintenance": {
+    "key": "slv_maintenance",
+    "table": "maintenance_events",
+    "label": "Maintenance",
+    "icon": "build_circle",
+    "fields": [
+      {
+        "name": "km_interval",
+        "source": "intervalle_km",
+        "label": "Intervalle Km",
+        "type": "numeric(14,2)",
+        "kind": "column",
+        "input": "number",
+        "required": true,
+        "options": [],
+        "relation": null,
+        "display": false,
+        "readonly": false
+      },
+      {
+        "name": "current_km",
+        "source": "km_actuel",
+        "label": "Km actuel",
+        "type": "numeric(14,2)",
+        "kind": "column",
+        "input": "number",
+        "required": true,
+        "options": [],
+        "relation": null,
+        "display": true,
+        "readonly": false
+      },
+      {
+        "name": "next_date",
+        "source": "prochain_date",
+        "label": "Prochain date",
+        "type": "date",
+        "kind": "column",
+        "input": "date",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": true,
+        "readonly": false
+      },
+      {
+        "name": "next_km",
+        "source": "prochain_km",
+        "label": "Prochain Km",
+        "type": "numeric(14,2)",
+        "kind": "column",
+        "input": "number",
+        "required": true,
+        "options": [],
+        "relation": null,
+        "display": true,
+        "readonly": false
+      },
+      {
+        "name": "maintenance_type_id",
+        "source": "type",
+        "label": "Type",
+        "type": "bigint",
+        "kind": "column",
+        "input": "relation",
+        "required": true,
+        "options": [],
+        "relation": "slv_type_maintenance",
+        "display": true,
+        "readonly": false
+      },
+      {
+        "name": "vehicle_id",
+        "source": "vehicule",
+        "label": "Vehicule",
+        "type": "bigint",
+        "kind": "column",
+        "input": "relation",
+        "required": true,
+        "options": [],
+        "relation": "slv_vehicules",
+        "display": true,
+        "readonly": false
+      },
+      {
+        "name": "name",
+        "source": "name",
+        "label": "Nom",
+        "type": "text",
+        "kind": "column",
+        "input": "text",
+        "required": true,
+        "options": [],
+        "relation": null,
+        "display": false,
+        "readonly": false
+      },
+      {
+        "name": "created_at",
+        "source": "created_at",
+        "label": "Créé le",
+        "type": "timestamptz",
+        "kind": "column",
+        "input": "datetime",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": false,
+        "readonly": false
+      },
+      {
+        "name": "created_by",
+        "source": "user_id",
+        "label": "Créé par",
+        "type": "bigint",
+        "kind": "column",
+        "input": "text",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": false,
+        "readonly": false
+      }
+    ],
+    "list": [
+      "current_km",
+      "next_date",
+      "next_km",
+      "maintenance_type_id",
+      "vehicle_id"
+    ]
+  },
+  "slv_marques": {
+    "key": "slv_marques",
+    "table": "brands",
+    "label": "Marques",
+    "icon": "folder",
+    "fields": [
+      {
+        "name": "name",
+        "source": "name",
+        "label": "Nom",
+        "type": "text",
+        "kind": "column",
+        "input": "text",
+        "required": true,
+        "options": [],
+        "relation": null,
+        "display": true,
+        "readonly": false
+      },
+      {
+        "name": "created_at",
+        "source": "created_at",
+        "label": "Créé le",
+        "type": "timestamptz",
+        "kind": "column",
+        "input": "datetime",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": false,
+        "readonly": false
+      },
+      {
+        "name": "created_by",
+        "source": "user_id",
+        "label": "Créé par",
+        "type": "bigint",
+        "kind": "column",
+        "input": "text",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": false,
+        "readonly": false
+      }
+    ],
+    "list": [
+      "name"
+    ]
+  },
+  "slv_modeles": {
+    "key": "slv_modeles",
+    "table": "vehicle_models",
+    "label": "Modèles",
+    "icon": "folder",
+    "fields": [
+      {
+        "name": "brand_id",
+        "source": "marque",
+        "label": "Marque",
+        "type": "bigint",
+        "kind": "column",
+        "input": "relation",
+        "required": true,
+        "options": [],
+        "relation": "slv_marques",
+        "display": true,
+        "readonly": false
+      },
+      {
+        "name": "name",
+        "source": "name",
+        "label": "Nom",
+        "type": "text",
+        "kind": "column",
+        "input": "text",
+        "required": true,
+        "options": [],
+        "relation": null,
+        "display": true,
+        "readonly": false
+      },
+      {
+        "name": "created_at",
+        "source": "created_at",
+        "label": "Créé le",
+        "type": "timestamptz",
+        "kind": "column",
+        "input": "datetime",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": false,
+        "readonly": false
+      },
+      {
+        "name": "created_by",
+        "source": "user_id",
+        "label": "Créé par",
+        "type": "bigint",
+        "kind": "column",
+        "input": "text",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": false,
+        "readonly": false
+      }
+    ],
+    "list": [
+      "brand_id",
+      "name"
+    ]
+  },
+  "slv_paiements": {
+    "key": "slv_paiements",
+    "table": "payments",
+    "label": "Paiements",
+    "icon": "payments",
+    "fields": [
+      {
+        "name": "contract_id",
+        "source": "contrat",
+        "label": "Contrat",
+        "type": "bigint",
+        "kind": "column",
+        "input": "relation",
+        "required": true,
+        "options": [],
+        "relation": "slv_contrats",
+        "display": true,
+        "readonly": false
+      },
+      {
+        "name": "payment_method",
+        "source": "mode_de_paiement",
+        "label": "Mode de paiement",
+        "type": "text",
+        "kind": "column",
+        "input": "select",
+        "required": true,
+        "options": [
+          {
+            "label": "Espèce",
+            "value": "espece"
+          },
+          {
+            "label": "TPE",
+            "value": "tpe"
+          },
+          {
+            "label": "Virement",
+            "value": "virement"
+          },
+          {
+            "label": "Chèque",
+            "value": "cheque"
+          },
+          {
+            "label": "En ligne",
+            "value": "en_ligne"
+          }
+        ],
+        "relation": null,
+        "display": true,
+        "readonly": false
+      },
+      {
+        "name": "amount",
+        "source": "montant",
+        "label": "Montant",
+        "type": "numeric(12,2)",
+        "kind": "column",
+        "input": "number",
+        "required": true,
+        "options": [],
+        "relation": null,
+        "display": true,
+        "readonly": false
+      },
+      {
+        "name": "remaining_amount",
+        "source": "reste",
+        "label": "Reste",
+        "type": "numeric(12,2)",
+        "kind": "column",
+        "input": "number",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": false,
+        "readonly": false
+      },
+      {
+        "name": "payment_status",
+        "source": "statut_de_paiement",
+        "label": "Statut de paiement",
+        "type": "text",
+        "kind": "column",
+        "input": "select",
+        "required": true,
+        "options": [
+          {
+            "label": "Payé",
+            "value": "paye"
+          },
+          {
+            "label": "Impayé",
+            "value": "impaye"
+          },
+          {
+            "label": "Échéancier",
+            "value": "echeancier"
+          },
+          {
+            "label": "Remboursement",
+            "value": "remboursement"
+          }
+        ],
+        "relation": null,
+        "display": true,
+        "readonly": false
+      },
+      {
+        "name": "display_name",
+        "source": "name",
+        "label": "Nom",
+        "type": "text",
+        "kind": "column",
+        "input": "text",
+        "required": true,
+        "options": [],
+        "relation": null,
+        "display": false,
+        "readonly": false
+      },
+      {
+        "name": "created_at",
+        "source": "created_at",
+        "label": "Créé le",
+        "type": "timestamptz",
+        "kind": "column",
+        "input": "datetime",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": false,
+        "readonly": false
+      },
+      {
+        "name": "created_by",
+        "source": "user_id",
+        "label": "Créé par",
+        "type": "bigint",
+        "kind": "column",
+        "input": "text",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": false,
+        "readonly": false
+      }
+    ],
+    "list": [
+      "contract_id",
+      "payment_method",
+      "amount",
+      "payment_status"
+    ]
+  },
+  "slv_pays": {
+    "key": "slv_pays",
+    "table": "countries",
+    "label": "Pays",
+    "icon": "folder",
+    "fields": [
+      {
+        "name": "name",
+        "source": "nom",
+        "label": "Nom",
+        "type": "text",
+        "kind": "column",
+        "input": "text",
+        "required": true,
+        "options": [],
+        "relation": null,
+        "display": false,
+        "readonly": false
+      },
+      {
+        "name": "legacy_name",
+        "source": "name",
+        "label": "Nom",
+        "type": "text",
+        "kind": "column",
+        "input": "text",
+        "required": true,
+        "options": [],
+        "relation": null,
+        "display": true,
+        "readonly": false
+      },
+      {
+        "name": "created_at",
+        "source": "created_at",
+        "label": "Créé le",
+        "type": "timestamptz",
+        "kind": "column",
+        "input": "datetime",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": false,
+        "readonly": false
+      },
+      {
+        "name": "created_by",
+        "source": "user_id",
+        "label": "Créé par",
+        "type": "bigint",
+        "kind": "column",
+        "input": "text",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": false,
+        "readonly": false
+      }
+    ],
+    "list": [
+      "legacy_name"
+    ]
+  },
+  "slv_reservations": {
+    "key": "slv_reservations",
+    "table": "reservations",
+    "label": "Réservations",
+    "icon": "confirmation_number",
+    "fields": [
+      {
+        "name": "category_id",
+        "source": "categorie",
+        "label": "Catégorie",
+        "type": "bigint",
+        "kind": "column",
+        "input": "relation",
+        "required": true,
+        "options": [],
+        "relation": "slv_categories",
+        "display": true,
+        "readonly": false
+      },
+      {
+        "name": "client_id",
+        "source": "client",
+        "label": "Client",
+        "type": "bigint",
+        "kind": "column",
+        "input": "relation",
+        "required": true,
+        "options": [],
+        "relation": "slv_locataires",
+        "display": true,
+        "readonly": false
+      },
+      {
+        "name": "employee_id",
+        "source": "collaborateur",
+        "label": "Agent",
+        "type": "bigint",
+        "kind": "column",
+        "input": "relation",
+        "required": false,
+        "options": [],
+        "relation": "slv_collaborateurs",
+        "display": true,
+        "readonly": false
+      },
+      {
+        "name": "departure_at",
+        "source": "date_depart",
+        "label": "Date de départ",
+        "type": "timestamptz",
+        "kind": "column",
+        "input": "datetime",
+        "required": true,
+        "options": [],
+        "relation": null,
+        "display": true,
+        "readonly": false
+      },
+      {
+        "name": "return_at",
+        "source": "date_retour",
+        "label": "Date de retour",
+        "type": "timestamptz",
+        "kind": "column",
+        "input": "datetime",
+        "required": true,
+        "options": [],
+        "relation": null,
+        "display": true,
+        "readonly": false
+      },
+      {
+        "name": "description",
+        "source": "description",
+        "label": "Description",
+        "type": "text",
+        "kind": "column",
+        "input": "textarea",
+        "required": true,
+        "options": [],
+        "relation": null,
+        "display": true,
+        "readonly": false
+      },
+      {
+        "name": "total_amount",
+        "source": "montant_total",
+        "label": "Montant Total",
+        "type": "numeric(12,2)",
+        "kind": "column",
+        "input": "number",
+        "required": true,
+        "options": [],
+        "relation": null,
+        "display": true,
+        "readonly": false
+      },
+      {
+        "name": "days",
+        "source": "nombre_jour",
+        "label": "Nombre de jour",
+        "type": "numeric(14,2)",
+        "kind": "column",
+        "input": "number",
+        "required": true,
+        "options": [],
+        "relation": null,
+        "display": true,
+        "readonly": false
+      },
+      {
+        "name": "daily_rate",
+        "source": "prix_jour",
+        "label": "Prix par jour",
+        "type": "numeric(12,2)",
+        "kind": "column",
+        "input": "number",
+        "required": true,
+        "options": [],
+        "relation": null,
+        "display": true,
+        "readonly": false
+      },
+      {
+        "name": "reference",
+        "source": "reference",
+        "label": "Référence",
+        "type": "varchar(32)",
+        "kind": "column",
+        "input": "text",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": true,
+        "readonly": false
+      },
+      {
+        "name": "status",
+        "source": "statut",
+        "label": "Statut",
+        "type": "text",
+        "kind": "column",
+        "input": "select",
+        "required": false,
+        "options": [
+          {
+            "label": "En cours",
+            "value": "en_cours"
+          },
+          {
+            "label": "Confirmée",
+            "value": "confirmee"
+          },
+          {
+            "label": "Annulée",
+            "value": "annulee"
+          },
+          {
+            "label": "Livrée",
+            "value": "livree"
+          }
+        ],
+        "relation": null,
+        "display": true,
+        "readonly": false
+      },
+      {
+        "name": "vehicle_id",
+        "source": "voiture",
+        "label": "Voiture",
+        "type": "bigint",
+        "kind": "column",
+        "input": "relation",
+        "required": false,
+        "options": [],
+        "relation": "slv_vehicules",
+        "display": true,
+        "readonly": false
+      },
+      {
+        "name": "display_name",
+        "source": "name",
+        "label": "Nom",
+        "type": "text",
+        "kind": "column",
+        "input": "text",
+        "required": true,
+        "options": [],
+        "relation": null,
+        "display": false,
+        "readonly": false
+      },
+      {
+        "name": "created_at",
+        "source": "created_at",
+        "label": "Créé le",
+        "type": "timestamptz",
+        "kind": "column",
+        "input": "datetime",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": false,
+        "readonly": false
+      },
+      {
+        "name": "created_by",
+        "source": "user_id",
+        "label": "Créé par",
+        "type": "bigint",
+        "kind": "column",
+        "input": "text",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": false,
+        "readonly": false
+      }
+    ],
+    "list": [
+      "category_id",
+      "client_id",
+      "employee_id",
+      "departure_at",
+      "return_at",
+      "description",
+      "total_amount",
+      "days"
+    ]
+  },
+  "slv_sources": {
+    "key": "slv_sources",
+    "table": "lead_sources",
+    "label": "Sources",
+    "icon": "folder",
+    "fields": [
+      {
+        "name": "name",
+        "source": "name",
+        "label": "Nom",
+        "type": "text",
+        "kind": "column",
+        "input": "text",
+        "required": true,
+        "options": [],
+        "relation": null,
+        "display": true,
+        "readonly": false
+      },
+      {
+        "name": "created_at",
+        "source": "created_at",
+        "label": "Créé le",
+        "type": "timestamptz",
+        "kind": "column",
+        "input": "datetime",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": false,
+        "readonly": false
+      },
+      {
+        "name": "created_by",
+        "source": "user_id",
+        "label": "Créé par",
+        "type": "bigint",
+        "kind": "column",
+        "input": "text",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": false,
+        "readonly": false
+      }
+    ],
+    "list": [
+      "name"
+    ]
+  },
+  "slv_suivi": {
+    "key": "slv_suivi",
+    "table": "follow_ups",
+    "label": "Suivi",
+    "icon": "gamepad_circle_up",
+    "fields": [
+      {
+        "name": "cancelled_at",
+        "source": "cancelled_at",
+        "label": "Cancellation date",
+        "type": "timestamptz",
+        "kind": "column",
+        "input": "datetime",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": false,
+        "readonly": false
+      },
+      {
+        "name": "client_id",
+        "source": "client_entity_related_id",
+        "label": "Client",
+        "type": "bigint",
+        "kind": "column",
+        "input": "relation",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": true,
+        "readonly": false
+      },
+      {
+        "name": "due_date",
+        "source": "date_due",
+        "label": "Date d'échéance",
+        "type": "date",
+        "kind": "column",
+        "input": "date",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": true,
+        "readonly": false
+      },
+      {
+        "name": "issued_at",
+        "source": "date_issued",
+        "label": "Date d'émission",
+        "type": "date",
+        "kind": "column",
+        "input": "date",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": true,
+        "readonly": false
+      },
+      {
+        "name": "discount_ref",
+        "source": "discount_entity_related_id",
+        "label": "Remise",
+        "type": "jsonb",
+        "kind": "legacy",
+        "input": "relation",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": false,
+        "readonly": false
+      },
+      {
+        "name": "note",
+        "source": "note",
+        "label": "Note",
+        "type": "text",
+        "kind": "column",
+        "input": "textarea",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": false,
+        "readonly": false
+      },
+      {
+        "name": "status",
+        "source": "order_status",
+        "label": "Statut",
+        "type": "text",
+        "kind": "column",
+        "input": "select",
+        "required": false,
+        "options": [
+          {
+            "label": "Brouillon",
+            "value": "draft"
+          },
+          {
+            "label": "Envoyé",
+            "value": "sent"
+          },
+          {
+            "label": "Confirmé",
+            "value": "confirmed"
+          },
+          {
+            "label": "Annulé",
+            "value": "canceled"
+          }
+        ],
+        "relation": null,
+        "display": true,
+        "readonly": false
+      },
+      {
+        "name": "payment_method",
+        "source": "payment_method",
+        "label": "Mode de paiement",
+        "type": "text",
+        "kind": "column",
+        "input": "select",
+        "required": false,
+        "options": [
+          {
+            "label": "En ligne",
+            "value": "online"
+          },
+          {
+            "label": "TPE",
+            "value": "payment_terminal"
+          },
+          {
+            "label": "Chèque",
+            "value": "cheque"
+          },
+          {
+            "label": "Virement",
+            "value": "transfer"
+          },
+          {
+            "label": "Espèce",
+            "value": "cash"
+          },
+          {
+            "label": "Avoir",
+            "value": "credit_note"
+          },
+          {
+            "label": "Paiement multiple",
+            "value": "split_payment"
+          }
+        ],
+        "relation": null,
+        "display": true,
+        "readonly": false
+      },
+      {
+        "name": "reference",
+        "source": "reference",
+        "label": "Référence",
+        "type": "varchar(32)",
+        "kind": "column",
+        "input": "text",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": true,
+        "readonly": false
+      },
+      {
+        "name": "session_ref",
+        "source": "session_entity_related_id",
+        "label": "Session",
+        "type": "jsonb",
+        "kind": "legacy",
+        "input": "relation",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": false,
+        "readonly": false
+      },
+      {
+        "name": "subject",
+        "source": "subject",
+        "label": "Objet",
+        "type": "text",
+        "kind": "column",
+        "input": "text",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": true,
+        "readonly": false
+      },
+      {
+        "name": "subtotal",
+        "source": "subtotal",
+        "label": "Sous-total",
+        "type": "numeric(12,2)",
+        "kind": "column",
+        "input": "number",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": false,
+        "readonly": false
+      },
+      {
+        "name": "subtotal_before_discount",
+        "source": "subtotal_before_discount",
+        "label": "Sous-total brut",
+        "type": "numeric(12,2)",
+        "kind": "column",
+        "input": "number",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": false,
+        "readonly": false
+      },
+      {
+        "name": "total",
+        "source": "total",
+        "label": "Total",
+        "type": "numeric(12,2)",
+        "kind": "column",
+        "input": "number",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": true,
+        "readonly": false
+      },
+      {
+        "name": "total_before_discount",
+        "source": "total_before_discount",
+        "label": "Total brut",
+        "type": "numeric(12,2)",
+        "kind": "column",
+        "input": "number",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": false,
+        "readonly": false
+      },
+      {
+        "name": "validated",
+        "source": "validated",
+        "label": "Validé",
+        "type": "boolean",
+        "kind": "column",
+        "input": "checkbox",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": true,
+        "readonly": false
+      },
+      {
+        "name": "vat_value",
+        "source": "vat_value",
+        "label": "Valeur de TVA",
+        "type": "numeric(12,2)",
+        "kind": "column",
+        "input": "number",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": true,
+        "readonly": false
+      },
+      {
+        "name": "display_name",
+        "source": "name",
+        "label": "Nom",
+        "type": "text",
+        "kind": "column",
+        "input": "text",
+        "required": true,
+        "options": [],
+        "relation": null,
+        "display": true,
+        "readonly": false
+      },
+      {
+        "name": "created_at",
+        "source": "created_at",
+        "label": "Créé le",
+        "type": "timestamptz",
+        "kind": "column",
+        "input": "datetime",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": false,
+        "readonly": false
+      },
+      {
+        "name": "created_by",
+        "source": "user_id",
+        "label": "Créé par",
+        "type": "bigint",
+        "kind": "column",
+        "input": "text",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": false,
+        "readonly": false
+      }
+    ],
+    "list": [
+      "client_id",
+      "due_date",
+      "issued_at",
+      "status",
+      "payment_method",
+      "reference",
+      "subject",
+      "total"
+    ]
+  },
+  "slv_type_maintenance": {
+    "key": "slv_type_maintenance",
+    "table": "maintenance_types",
+    "label": "Type maintenance",
+    "icon": "folder",
+    "fields": [
+      {
+        "name": "date_interval",
+        "source": "intervalle_date",
+        "label": "Intervalle Date",
+        "type": "numeric(14,2)",
+        "kind": "column",
+        "input": "number",
+        "required": true,
+        "options": [],
+        "relation": null,
+        "display": true,
+        "readonly": false
+      },
+      {
+        "name": "km_interval",
+        "source": "intervalle_km",
+        "label": "Intervalle Km",
+        "type": "numeric(14,2)",
+        "kind": "column",
+        "input": "number",
+        "required": true,
+        "options": [],
+        "relation": null,
+        "display": true,
+        "readonly": false
+      },
+      {
+        "name": "name",
+        "source": "type",
+        "label": "Type",
+        "type": "text",
+        "kind": "column",
+        "input": "text",
+        "required": true,
+        "options": [],
+        "relation": null,
+        "display": true,
+        "readonly": false
+      },
+      {
+        "name": "legacy_name",
+        "source": "name",
+        "label": "Nom",
+        "type": "text",
+        "kind": "column",
+        "input": "text",
+        "required": true,
+        "options": [],
+        "relation": null,
+        "display": false,
+        "readonly": false
+      },
+      {
+        "name": "created_at",
+        "source": "created_at",
+        "label": "Créé le",
+        "type": "timestamptz",
+        "kind": "column",
+        "input": "datetime",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": false,
+        "readonly": false
+      },
+      {
+        "name": "created_by",
+        "source": "user_id",
+        "label": "Créé par",
+        "type": "bigint",
+        "kind": "column",
+        "input": "text",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": false,
+        "readonly": false
+      }
+    ],
+    "list": [
+      "date_interval",
+      "km_interval",
+      "name"
+    ]
+  },
+  "slv_vehicules": {
+    "key": "slv_vehicules",
+    "table": "vehicles",
+    "label": "Véhicules",
+    "icon": "commute",
+    "fields": [
+      {
+        "name": "credit_down_payment",
+        "source": "avance_de_credit",
+        "label": "Avance de crédit",
+        "type": "numeric(12,2)",
+        "kind": "column",
+        "input": "number",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": false,
+        "readonly": false
+      },
+      {
+        "name": "gearbox",
+        "source": "boite_de_vitesse",
+        "label": "Boite de vitesse",
+        "type": "text",
+        "kind": "column",
+        "input": "select",
+        "required": false,
+        "options": [
+          {
+            "label": "Automatique",
+            "value": "Automatique"
+          },
+          {
+            "label": "Manuel",
+            "value": "Manuel"
+          }
+        ],
+        "relation": null,
+        "display": true,
+        "readonly": false
+      },
+      {
+        "name": "fuel_type",
+        "source": "carburant",
+        "label": "Carburant",
+        "type": "text",
+        "kind": "column",
+        "input": "select",
+        "required": true,
+        "options": [
+          {
+            "label": "Diesel",
+            "value": "Diesel"
+          },
+          {
+            "label": "Essence",
+            "value": "Essence"
+          },
+          {
+            "label": "Hybrid",
+            "value": "Hybrid"
+          },
+          {
+            "label": "Électrique",
+            "value": "electrique"
+          }
+        ],
+        "relation": null,
+        "display": true,
+        "readonly": false
+      },
+      {
+        "name": "category_id",
+        "source": "categorie",
+        "label": "Catégorie",
+        "type": "bigint",
+        "kind": "column",
+        "input": "relation",
+        "required": true,
+        "options": [],
+        "relation": "slv_categories",
+        "display": true,
+        "readonly": false
+      },
+      {
+        "name": "color_id",
+        "source": "couleur",
+        "label": "Couleur",
+        "type": "bigint",
+        "kind": "column",
+        "input": "relation",
+        "required": true,
+        "options": [],
+        "relation": "couleurs",
+        "display": false,
+        "readonly": false
+      },
+      {
+        "name": "cpi_ww",
+        "source": "cpi_ww",
+        "label": "CPI WW",
+        "type": "text",
+        "kind": "column",
+        "input": "text",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": true,
+        "readonly": false
+      },
+      {
+        "name": "first_registration_date",
+        "source": "date_de_mise_en_circulation",
+        "label": "Date de mise en circulation",
+        "type": "date",
+        "kind": "column",
+        "input": "date",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": false,
+        "readonly": false
+      },
+      {
+        "name": "credit_due_date",
+        "source": "date_decheance",
+        "label": "Date d'échéance",
+        "type": "date",
+        "kind": "column",
+        "input": "date",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": false,
+        "readonly": false
+      },
+      {
+        "name": "km",
+        "source": "km",
+        "label": "km",
+        "type": "numeric(14,2)",
+        "kind": "column",
+        "input": "number",
+        "required": true,
+        "options": [],
+        "relation": null,
+        "display": true,
+        "readonly": false
+      },
+      {
+        "name": "lessor_id",
+        "source": "loueurs",
+        "label": "Loueurs",
+        "type": "bigint",
+        "kind": "column",
+        "input": "relation",
+        "required": false,
+        "options": [],
+        "relation": "loueurs",
+        "display": false,
+        "readonly": false
+      },
+      {
+        "name": "credit_house_id",
+        "source": "maison_de_credit",
+        "label": "Maison de credit",
+        "type": "bigint",
+        "kind": "column",
+        "input": "relation",
+        "required": false,
+        "options": [],
+        "relation": "maisons_de_credit",
+        "display": false,
+        "readonly": false
+      },
+      {
+        "name": "brand_id",
+        "source": "marque",
+        "label": "Marque",
+        "type": "bigint",
+        "kind": "column",
+        "input": "relation",
+        "required": true,
+        "options": [],
+        "relation": "slv_marques",
+        "display": false,
+        "readonly": false
+      },
+      {
+        "name": "plate_number",
+        "source": "matricule",
+        "label": "Matricule",
+        "type": "text",
+        "kind": "column",
+        "input": "text",
+        "required": true,
+        "options": [],
+        "relation": null,
+        "display": true,
+        "readonly": false
+      },
+      {
+        "name": "operating_mode",
+        "source": "mode",
+        "label": "Mode",
+        "type": "text",
+        "kind": "column",
+        "input": "select",
+        "required": true,
+        "options": [
+          {
+            "label": "Location",
+            "value": "location"
+          },
+          {
+            "label": "Sous location",
+            "value": "sous_location"
+          },
+          {
+            "label": "Service",
+            "value": "service"
+          }
+        ],
+        "relation": null,
+        "display": true,
+        "readonly": false
+      },
+      {
+        "name": "model_id",
+        "source": "modele",
+        "label": "Modèle",
+        "type": "bigint",
+        "kind": "column",
+        "input": "relation",
+        "required": true,
+        "options": [],
+        "relation": "slv_modeles",
+        "display": false,
+        "readonly": false
+      },
+      {
+        "name": "chassis_number",
+        "source": "n_de_chassis",
+        "label": "Nº de chassis",
+        "type": "text",
+        "kind": "column",
+        "input": "text",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": true,
+        "readonly": false
+      },
+      {
+        "name": "credit_months",
+        "source": "nombre_mois_credit",
+        "label": "Nombre de mois",
+        "type": "numeric(14,2)",
+        "kind": "column",
+        "input": "number",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": false,
+        "readonly": false
+      },
+      {
+        "name": "purchase_price",
+        "source": "prix_dachat",
+        "label": "Prix d'achat",
+        "type": "numeric(12,2)",
+        "kind": "column",
+        "input": "number",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": false,
+        "readonly": false
+      },
+      {
+        "name": "daily_rate",
+        "source": "prix_j",
+        "label": "Prix/j (Location)",
+        "type": "numeric(12,2)",
+        "kind": "column",
+        "input": "number",
+        "required": true,
+        "options": [],
+        "relation": null,
+        "display": true,
+        "readonly": false
+      },
+      {
+        "name": "fiscal_power",
+        "source": "puissance_fiscale",
+        "label": "Puissance fiscale",
+        "type": "numeric(14,2)",
+        "kind": "column",
+        "input": "number",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": false,
+        "readonly": false
+      },
+      {
+        "name": "status",
+        "source": "statut",
+        "label": "Statut",
+        "type": "text",
+        "kind": "column",
+        "input": "select",
+        "required": true,
+        "options": [
+          {
+            "label": "En location",
+            "value": "en_location"
+          },
+          {
+            "label": "Disponible",
+            "value": "disponible"
+          },
+          {
+            "label": "En réparation",
+            "value": "en_reparation"
+          },
+          {
+            "label": "Hors service",
+            "value": "hors_service"
+          }
+        ],
+        "relation": null,
+        "display": true,
+        "readonly": false
+      },
+      {
+        "name": "monthly_installment",
+        "source": "traite_mois",
+        "label": "Traite par mois",
+        "type": "numeric(12,2)",
+        "kind": "column",
+        "input": "number",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": false,
+        "readonly": false
+      },
+      {
+        "name": "display_name",
+        "source": "name",
+        "label": "Nom",
+        "type": "text",
+        "kind": "column",
+        "input": "text",
+        "required": true,
+        "options": [],
+        "relation": null,
+        "display": true,
+        "readonly": false
+      },
+      {
+        "name": "created_at",
+        "source": "created_at",
+        "label": "Créé le",
+        "type": "timestamptz",
+        "kind": "column",
+        "input": "datetime",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": false,
+        "readonly": false
+      },
+      {
+        "name": "created_by",
+        "source": "user_id",
+        "label": "Créé par",
+        "type": "bigint",
+        "kind": "column",
+        "input": "text",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": false,
+        "readonly": false
+      }
+    ],
+    "list": [
+      "gearbox",
+      "fuel_type",
+      "category_id",
+      "cpi_ww",
+      "km",
+      "plate_number",
+      "operating_mode",
+      "chassis_number"
+    ]
+  },
+  "slv_whatsapp": {
+    "key": "slv_whatsapp",
+    "table": "whatsapp_campaigns",
+    "label": "Whatsapp",
+    "icon": "sms",
+    "fields": [
+      {
+        "name": "name",
+        "source": "name",
+        "label": "Nom",
+        "type": "text",
+        "kind": "column",
+        "input": "text",
+        "required": true,
+        "options": [],
+        "relation": null,
+        "display": true,
+        "readonly": false
+      },
+      {
+        "name": "created_at",
+        "source": "created_at",
+        "label": "Créé le",
+        "type": "timestamptz",
+        "kind": "column",
+        "input": "datetime",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": false,
+        "readonly": false
+      },
+      {
+        "name": "created_by",
+        "source": "user_id",
+        "label": "Créé par",
+        "type": "bigint",
+        "kind": "column",
+        "input": "text",
+        "required": false,
+        "options": [],
+        "relation": null,
+        "display": false,
+        "readonly": false
+      }
+    ],
+    "list": [
+      "name"
+    ]
+  }
+}

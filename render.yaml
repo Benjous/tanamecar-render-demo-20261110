@@ -1,0 +1,60 @@
+databases:
+  - name: tanamecar-demo-db
+    plan: free
+    region: frankfurt
+    databaseName: tanamecar_demo
+    user: tanamecar
+
+services:
+  - type: web
+    name: tanamecar-demo
+    runtime: docker
+    plan: free
+    region: frankfurt
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    healthCheckPath: /up
+    autoDeploy: false
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: "false"
+      - key: APP_KEY
+        sync: false
+      - key: DB_CONNECTION
+        value: pgsql
+      - key: DB_URL
+        fromDatabase:
+          name: tanamecar-demo-db
+          property: connectionString
+      - key: SESSION_DRIVER
+        value: database
+      - key: SESSION_LIFETIME
+        value: "10080"
+      - key: SESSION_SECURE_COOKIE
+        value: "true"
+      - key: SESSION_SAME_SITE
+        value: lax
+      - key: SESSION_ENCRYPT
+        value: "false"
+      - key: CACHE_STORE
+        value: database
+      - key: QUEUE_CONNECTION
+        value: database
+      - key: FILESYSTEM_DISK
+        value: local
+      - key: LOG_CHANNEL
+        value: stderr
+      - key: LOG_LEVEL
+        value: warning
+      - key: MAIL_MAILER
+        value: log
+      - key: TRUSTED_PROXIES
+        value: "*"
+      - key: HASH_DRIVER
+        value: bcrypt
+      - key: BCRYPT_ROUNDS
+        value: "12"
+      - key: RUN_MIGRATIONS
+        value: "true"
