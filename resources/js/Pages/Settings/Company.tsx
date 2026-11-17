@@ -1,8 +1,6 @@
 import { Head, useForm } from '@inertiajs/react';
 import { theme } from '@/lib/theme';
-import { Save } from 'lucide-react';
 import AppLayout from '@/Layouts/AppLayout';
-import { Field, PageHeader } from '@/components/ui';
 
 export default function CompanySettings({ settings }: { settings: Record<string, any> }) {
     const { data, setData, put, processing, errors } = useForm({
@@ -17,22 +15,21 @@ export default function CompanySettings({ settings }: { settings: Record<string,
 
     return (
         <AppLayout>
-            <Head title="Société" />
-            <PageHeader title="Société"  />
-            <form onSubmit={(e) => { e.preventDefault(); put('/settings/company'); }} className="tc-card max-w-3xl p-5">
-                <div className="grid gap-4 md:grid-cols-2">
-                    <Field label="Nom" error={errors.name}><input className="tc-input" value={data.name} onChange={(e) => setData('name', e.target.value)} /></Field>
-                    <Field label="Nom de marque"><input className="tc-input" value={data.brand_name} onChange={(e) => setData('brand_name', e.target.value)} /></Field>
-                    <Field label="Devise"><input className="tc-input" value={data.currency} onChange={(e) => setData('currency', e.target.value)} /></Field>
-                    <Field label="Fuseau horaire"><input className="tc-input" value={data.timezone} onChange={(e) => setData('timezone', e.target.value)} /></Field>
-                    <Field label="Format de date"><input className="tc-input" value={data.date_format} onChange={(e) => setData('date_format', e.target.value)} /></Field>
-                    <Field label="Couleur principale"><input type="color" className="tc-input h-10" value={data.theme_primary} onChange={(e) => setData('theme_primary', e.target.value)} /></Field>
-                    <Field label="Couleur accent"><input type="color" className="tc-input h-10" value={data.theme_accent} onChange={(e) => setData('theme_accent', e.target.value)} /></Field>
-                </div>
-                <div className="mt-4 flex justify-end"><button className="tc-btn-primary" disabled={processing}><Save className="h-4 w-4" /> Enregistrer</button></div>
+            <Head title="Profile" />
+            <form onSubmit={(e) => { e.preventDefault(); put('/settings/company'); }}>
+                <table className="al-form-table">
+                    <tbody>
+                        <tr><td className="al-form-label"><span className="al-triangle">&#9654;</span>Nom</td><td><input value={data.name} onChange={(e) => setData('name', e.target.value)} />{errors.name && <div className="al-login-error">{errors.name}</div>}</td></tr>
+                        <tr><td className="al-form-label"><span className="al-triangle">&#9654;</span>Nom de marque</td><td><input value={data.brand_name} onChange={(e) => setData('brand_name', e.target.value)} /></td></tr>
+                        <tr><td className="al-form-label"><span className="al-triangle">&#9654;</span>Devise</td><td><input value={data.currency} onChange={(e) => setData('currency', e.target.value)} /></td></tr>
+                        <tr><td className="al-form-label"><span className="al-triangle">&#9654;</span>Fuseau horaire</td><td><input value={data.timezone} onChange={(e) => setData('timezone', e.target.value)} /></td></tr>
+                        <tr><td className="al-form-label"><span className="al-triangle">&#9654;</span>Format de date</td><td><input value={data.date_format} onChange={(e) => setData('date_format', e.target.value)} /></td></tr>
+                        <tr><td className="al-form-label"><span className="al-triangle">&#9654;</span>Couleur principale</td><td><input type="color" value={data.theme_primary} onChange={(e) => setData('theme_primary', e.target.value)} style={{ width: 80, height: 24 }} /></td></tr>
+                        <tr><td className="al-form-label"><span className="al-triangle">&#9654;</span>Couleur accent</td><td><input type="color" value={data.theme_accent} onChange={(e) => setData('theme_accent', e.target.value)} style={{ width: 80, height: 24 }} /></td></tr>
+                        <tr><td /><td className="al-form-actions"><button type="submit" className="al-button al-button-primary" disabled={processing}>{processing ? 'Enregistrement...' : 'Enregistrer'}</button></td></tr>
+                    </tbody>
+                </table>
             </form>
         </AppLayout>
     );
 }
-
-

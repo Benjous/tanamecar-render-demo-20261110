@@ -7,11 +7,26 @@ export type AuthUser = {
     permissions: Record<string, string>;
 };
 
+export type ProfileSummary = {
+    id: number;
+    name: string;
+    email: string;
+    is_admin: boolean;
+    role: string | null;
+};
+
+export type ProfilesProps = {
+    current: ProfileSummary;
+    available: ProfileSummary[];
+    impersonation: { admin_id: number; admin_name: string | null; admin_email: string | null } | null;
+};
+
 export type PageProps = {
     auth: { user: AuthUser | null };
+    profiles?: ProfilesProps | null;
     flash: { success?: string | null; error?: string | null };
     company: { name: string; currency: string; timezone: string };
-    branding: { footer: string };
+    branding: { name: string; logo: string; footer: string; primary?: string; blue?: string; accent?: string };
     [key: string]: unknown;
 };
 

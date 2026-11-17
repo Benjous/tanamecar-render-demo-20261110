@@ -7,7 +7,6 @@ use App\Models\Vehicle;
 use App\Models\VehicleInstallment;
 use App\Services\SearchService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
@@ -22,13 +21,28 @@ class VehicleInstallmentController extends Controller
             ->orderBy('due_date')
             ->get();
 
+        $summariesQuery = AutolocTraiteSummary::query()
+            ->with('vehicle:id,display_name,plate_number,purchase_price,credit_down_payment');
+        if ($destine = trim($request->string('destine')->toString())) {
+            $summariesQuery->where(function ($builder) use ($destine) {
+                $builder->where('autoloc_traite_summaries.source_vehicle_name', 'ilike', "%{$destine}%")
+                    ->orWhereHas('vehicle', fn ($vehicle) => $vehicle->where('display_name', 'ilike', "%{$destine}%"));
+            });
+        }
+        if ($matr = trim($request->string('matr')->toString())) {
+            $summariesQuery->where(function ($builder) use ($matr) {
+                $builder->where('autoloc_traite_summaries.source_plate', 'ilike', "%{$matr}%")
+                    ->orWhereHas('vehicle', fn ($vehicle) => $vehicle->where('plate_number', 'ilike', "%{$matr}%"));
+            });
+        }
+        if ($maison = trim($request->string('maison')->toString())) {
+            $summariesQuery->where('autoloc_traite_summaries.credit_house', 'ilike', "%{$maison}%");
+        }
+
         return Inertia::render('VehicleInstallments/Index', [
             'installments' => $rows,
-            'summaries' => AutolocTraiteSummary::query()
-                ->with('vehicle:id,display_name,plate_number')
-                ->orderBy('source_vehicle_name')
-                ->get(),
-            'filters' => $request->only(['q', 'status', 'vehicle_id', 'from', 'to', 'due']),
+            'summaries' => $summariesQuery->orderBy('source_vehicle_name')->get(),
+            'filters' => $request->only(['q', 'status', 'vehicle_id', 'from', 'to', 'due', 'view', 'destine', 'matr', 'maison']),
             'stats' => [
                 'count' => $rows->count(),
                 'recorded_sum' => $rows->where('origin', 'autoloc')->sum('amount_recorded'),
@@ -136,7 +150,7 @@ class VehicleInstallmentController extends Controller
 
     public function exportCsv(Request $request): StreamedResponse
     {
-        $rows = $this->filteredQuery($request)->with('vehicle:id,display_name,plate_number')->orderBy('due_date')->get();
+        $rows = $this->filteredQuery($request)->with('vehicle:id,display_name,plate_number,purchase_price,credit_down_payment')->orderBy('due_date')->get();
 
         return response()->streamDownload(function () use ($rows): void {
             $stream = fopen('php://output', 'w');
@@ -203,6 +217,7 @@ class VehicleInstallmentController extends Controller
         if ($request->filled('to')) {
             $query->whereDate('due_date', '<=', $request->date('to'));
         }
+
         return $query;
     }
 

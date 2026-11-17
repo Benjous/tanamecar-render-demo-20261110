@@ -17,7 +17,7 @@ class SecurityHeaders
         $response->headers->set('Referrer-Policy', 'strict-origin-when-cross-origin');
         $response->headers->set('X-Robots-Tag', 'noindex, nofollow, noarchive');
         $response->headers->set('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
-        $scriptSrc = app()->isLocal() ? "'self' 'unsafe-inline'" : "'self'";
+        $scriptSrc = app()->isProduction() ? "'self'" : "'self' 'unsafe-inline'";
         $response->headers->set(
             'Content-Security-Policy',
             "default-src 'self'; img-src 'self' data: blob:; style-src 'self' 'unsafe-inline'; script-src {$scriptSrc}; font-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'"

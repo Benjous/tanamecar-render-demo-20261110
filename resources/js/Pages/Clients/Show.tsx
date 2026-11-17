@@ -4,7 +4,11 @@ import AppLayout from '@/Layouts/AppLayout';
 import { Badge, PageHeader, PrintButton } from '@/components/ui';
 import { date, dateTime, money, statusTone } from '@/lib/utils';
 
-export default function ClientShow({ client, totals, documents, timeline }: { client: any; totals: any; documents: any[]; timeline: any[] }) {
+export default function ClientShow({ client, totals, documents, timeline, paymentHistory, paymentSummary, clientInvoices }: { client: any; totals: any; documents: any[]; timeline: any[]; paymentHistory?: any[]; paymentSummary?: any; clientInvoices?: any[] }) {
+    const summary = paymentSummary ?? {};
+    const payments = paymentHistory ?? [];
+    const invoices = clientInvoices ?? [];
+
     return (
         <AppLayout>
             <Head title={client.display_name} />
@@ -74,6 +78,72 @@ export default function ClientShow({ client, totals, documents, timeline }: { cl
                     ))}
                     {!(timeline ?? []).length && <div className="text-sm text-slate-400">Aucun résultat</div>}
                 </div>
+            </section>
+
+            <section className="tc-card mt-4 p-5">
+                <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
+                    <h2 className="text-sm font-bold text-slate-900">HISTORIQUE DES PAIEMENTS</h2>
+                    <span className="text-[11px] text-slate-500">Calculé sur les paiements enregistrés</span>
+                </div>
+
+                <div className="mb-4 grid gap-3 sm:grid-cols-3 xl:grid-cols-6">
+                    <div className="rounded-lg border border-slate-100 bg-slate-50 p-3"><div className="text-[10px] font-bold uppercase text-slate-400">Total à régler</div><div className="mt-1 text-base font-black">{money(summary.contracts_total ?? 0)}</div></div>
+                    <div className="rounded-lg border border-slate-100 bg-emerald-50 p-3"><div className="text-[10px] font-bold uppercase text-emerald-600">Total payé</div><div className="mt-1 text-base font-black text-emerald-700">{money(summary.paid_total ?? 0)}</div></div>
+                    <div className="rounded-lg border border-slate-100 bg-amber-50 p-3"><div className="text-[10px] font-bold uppercase text-amber-600">Reste dû</div><div className="mt-1 text-base font-black text-amber-700">{money(summary.remaining_total ?? 0)}</div></div>
+                    <div className="rounded-lg border border-slate-100 bg-slate-50 p-3"><div className="text-[10px] font-bold uppercase text-slate-400">Règlements</div><div className="mt-1 text-base font-black">{summary.payments_count ?? 0}</div></div>
+                    <div className="rounded-lg border border-slate-100 bg-slate-50 p-3"><div className="text-[10px] font-bold uppercase text-slate-400">Avances</div><div className="mt-1 text-base font-black">{money(summary.advances_total ?? 0)}</div></div>
+                    <div className="rounded-lg border border-slate-100 bg-slate-50 p-3"><div className="text-[10px] font-bold uppercase text-slate-400">Factures</div><div className="mt-1 text-base font-black">{summary.invoices_count ?? 0}</div><div className="text-[10px] text-slate-500">{money(summary.invoices_total ?? 0)}</div></div>
+                </div>
+
+                {(summary.invoices_unlinked ?? 0) > 0 && (
+                    <div className="mb-3 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-800">
+                        {summary.invoices_unlinked} facture(s) sans dossier lié : règlement non rapproché.
+                    </div>
+                )}
+
+                <div className="overflow-x-auto">
+                    <table className="tc-table">
+                        <thead><tr><th>Date</th><th>Statut</th><th>Contrat</th><th>Facture(s)</th><th>Mode</th><th>Montant</th><th>Référence</th><th>Reste contrat</th></tr></thead>
+                        <tbody>
+                            {payments.map((payment: any) => (
+                                <tr key={payment.id}>
+                                    <td>{dateTime(payment.date)}</td>
+                                    <td><span className="al-payment-status">{payment.status}</span></td>
+                                    <td>{payment.contract_reference ?? '-'}</td>
+                                    <td>{payment.invoice_references?.length ? payment.invoice_references.join(', ') : 'Non rapprochée'}</td>
+                                    <td>{payment.method ?? '-'}</td>
+                                    <td className="font-semibold">{money(payment.amount)}</td>
+                                    <td>{payment.reference ?? `Paiement #${payment.id}`}</td>
+                                    <td>{money(payment.contract_remaining ?? 0)}</td>
+                                </tr>
+                            ))}
+                            {!payments.length && <tr><td colSpan={8} className="py-8 text-center text-slate-400">Aucun paiement enregistré.</td></tr>}
+                        </tbody>
+                    </table>
+                </div>
+
+                {invoices.length > 0 && (
+                    <div className="mt-4">
+                        <h3 className="mb-2 text-xs font-bold uppercase text-slate-500">Factures du client</h3>
+                        <div className="overflow-x-auto">
+                            <table className="tc-table">
+                                <thead><tr><th>Référence</th><th>Dossier</th><th>Émission</th><th>Échéance</th><th>Total</th><th>État</th></tr></thead>
+                                <tbody>
+                                    {invoices.map((invoice: any) => (
+                                        <tr key={invoice.id}>
+                                            <td><Link href={`/invoices/${invoice.id}`} className="font-semibold text-brand-700">{invoice.reference}</Link></td>
+                                            <td>{invoice.file_reference ?? '-'}</td>
+                                            <td>{date(invoice.issued_at)}</td>
+                                            <td>{date(invoice.due_date)}</td>
+                                            <td>{money(invoice.total)}</td>
+                                            <td>{invoice.status}</td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                )}
             </section>
 
             <section className="tc-card mt-4 overflow-hidden">

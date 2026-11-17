@@ -1,32 +1,33 @@
 <?php
 
-use App\Http\Controllers\AutolocMatchingController;
-use App\Http\Controllers\BillingController;
-use App\Http\Controllers\BackupController;
 use App\Http\Controllers\ArchiveController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\TwoFactorChallengeController;
+use App\Http\Controllers\AutolocMatchingController;
+use App\Http\Controllers\BackupController;
+use App\Http\Controllers\BillingController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\ClientVolumeController;
 use App\Http\Controllers\CommandController;
-use App\Http\Controllers\DesignSystemController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\ContractController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DeadlineController;
+use App\Http\Controllers\DesignSystemController;
 use App\Http\Controllers\ExportController;
 use App\Http\Controllers\FileController;
 use App\Http\Controllers\FinanceController;
 use App\Http\Controllers\GenericEntityController;
-use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\ImportController;
+use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\ManipulationController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PdfTemplateController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ProfileSwitchController;
 use App\Http\Controllers\QuoteController;
 use App\Http\Controllers\RecapController;
 use App\Http\Controllers\ReportController;
@@ -37,9 +38,10 @@ use App\Http\Controllers\SecurityController;
 use App\Http\Controllers\SubRentalController;
 use App\Http\Controllers\TeamController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\VehicleAmortizationController;
 use App\Http\Controllers\VehicleController;
 use App\Http\Controllers\VehicleInstallmentController;
-use App\Http\Controllers\VehicleAmortizationController;
+use App\Http\Controllers\WadiSyncController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('guest')->group(function () {
@@ -55,22 +57,24 @@ Route::middleware('guest')->group(function () {
 
 Route::middleware('auth')->group(function () {
     Route::post('/logout', [LoginController::class, 'destroy'])->name('logout');
-    Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard', [DashboardController::class, 'index'])->middleware('admin')->name('dashboard');
+    Route::redirect('/', '/contracts?view=returns')->name('home');
     Route::get('/search', [SearchController::class, 'index'])->name('search');
     Route::get('/command-search', [CommandController::class, 'index'])->name('command.search');
     Route::get('/manipulation', [ManipulationController::class, 'index'])->name('manipulation.index');
-Route::middleware('permission:deadlines,view')->group(function () {
-    Route::get('/deadlines', [DeadlineController::class, 'index'])->name('deadlines.index');
-    Route::post('/deadlines', [DeadlineController::class, 'store'])->middleware('permission:deadlines,create')->name('deadlines.store');
-    Route::post('/deadlines/{deadline}/complete', [DeadlineController::class, 'complete'])->middleware('permission:deadlines,update')->name('deadlines.complete');
-});
+    Route::middleware('permission:deadlines,view')->group(function () {
+        Route::get('/deadlines', [DeadlineController::class, 'index'])->name('deadlines.index');
+        Route::post('/deadlines', [DeadlineController::class, 'store'])->middleware('permission:deadlines,create')->name('deadlines.store');
+        Route::post('/deadlines/{deadline}/complete', [DeadlineController::class, 'complete'])->middleware('permission:deadlines,update')->name('deadlines.complete');
+    });
     Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
     Route::get('/recap', [RecapController::class, 'index'])->name('recap.index');
-    Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
+    Route::get('/reports', [ReportController::class, 'index'])->middleware('admin')->name('reports.index');
     Route::get('/billing', [BillingController::class, 'index'])->name('billing.index');
     Route::get('/billing/versions', [BillingController::class, 'versions'])->name('billing.versions');
     Route::post('/notifications/{id}/read', [NotificationController::class, 'read'])->name('notifications.read');
     Route::post('/notifications/read-all', [NotificationController::class, 'readAll'])->name('notifications.read-all');
+    Route::get('/exports', [ExportController::class, 'index'])->name('exports.index');
     Route::get('/exports/{entity}.csv', [ExportController::class, 'csv'])->name('exports.csv');
 
     Route::middleware('permission:slv_contrats,view')->group(function () {
@@ -81,7 +85,7 @@ Route::middleware('permission:deadlines,view')->group(function () {
         Route::get('/contracts/{contract}/edit', [ContractController::class, 'edit'])->name('contracts.edit');
         Route::put('/contracts/{contract}', [ContractController::class, 'update'])->middleware('permission:slv_contrats,update')->name('contracts.update');
         Route::post('/contracts/{contract}/duplicate', [ContractController::class, 'duplicate'])->middleware('permission:slv_contrats,create')->name('contracts.duplicate');
-Route::post('/contracts/{contract}/return', [ContractController::class, 'returnContract'])->name('contracts.return');
+        Route::post('/contracts/{contract}/return', [ContractController::class, 'returnContract'])->name('contracts.return');
         Route::delete('/contracts/{contract}', [ContractController::class, 'destroy'])->middleware('permission:slv_contrats,delete')->name('contracts.destroy');
         Route::get('/contracts/{contract}/pdf', [ContractController::class, 'pdf'])->name('contracts.pdf');
     });
@@ -121,7 +125,7 @@ Route::post('/contracts/{contract}/return', [ContractController::class, 'returnC
         Route::get('/vehicles/{vehicle}/edit', [VehicleController::class, 'edit'])->name('vehicles.edit');
         Route::put('/vehicles/{vehicle}', [VehicleController::class, 'update'])->middleware('permission:slv_vehicules,update')->name('vehicles.update');
         Route::delete('/vehicles/{vehicle}', [VehicleController::class, 'destroy'])->middleware('permission:slv_vehicules,delete')->name('vehicles.destroy');
-Route::post('/vehicles/{vehicle}/archive', [VehicleController::class, 'archive'])->middleware('permission:slv_vehicules,update')->name('vehicles.archive');
+        Route::post('/vehicles/{vehicle}/archive', [VehicleController::class, 'archive'])->middleware('permission:slv_vehicules,update')->name('vehicles.archive');
     });
 
     Route::middleware('permission:vehicle_installments,view')->group(function () {
@@ -150,8 +154,14 @@ Route::post('/vehicles/{vehicle}/archive', [VehicleController::class, 'archive']
         Route::get('/invoices', [InvoiceController::class, 'index'])->name('invoices.index');
         Route::get('/invoices/create', [InvoiceController::class, 'create'])->name('invoices.create');
         Route::post('/invoices', [InvoiceController::class, 'store'])->name('invoices.store');
+        Route::get('/invoices/{invoice}/edit', [InvoiceController::class, 'edit'])->name('invoices.edit');
+        Route::put('/invoices/{invoice}', [InvoiceController::class, 'update'])->name('invoices.update');
         Route::get('/invoices/{invoice}', [InvoiceController::class, 'show'])->name('invoices.show');
         Route::get('/invoices/{invoice}/pdf', [InvoiceController::class, 'pdf'])->name('invoices.pdf');
+        Route::get('/invoices/{invoice}/pdf/header', [InvoiceController::class, 'pdfHeader'])->name('invoices.pdf.header');
+        Route::get('/invoices/{invoice}/pdf/no-header', [InvoiceController::class, 'pdfNoHeader'])->name('invoices.pdf.no-header');
+        Route::get('/invoices/{invoice}/print/header', [InvoiceController::class, 'printHeader'])->name('invoices.print.header');
+        Route::get('/invoices/{invoice}/print/no-header', [InvoiceController::class, 'printNoHeader'])->name('invoices.print.no-header');
     });
 
     Route::middleware('permission:devis,view')->group(function () {
@@ -179,11 +189,13 @@ Route::post('/vehicles/{vehicle}/archive', [VehicleController::class, 'archive']
     Route::get('/settings/profile', [ProfileController::class, 'edit'])->name('settings.profile');
     Route::put('/settings/profile', [ProfileController::class, 'update'])->name('settings.profile.update');
 
-    Route::get('/settings/security', [SecurityController::class, 'show'])->name('settings.security');
-    Route::post('/settings/security/enable', [SecurityController::class, 'enable'])->name('settings.security.enable');
-    Route::post('/settings/security/confirm', [SecurityController::class, 'confirm'])->name('settings.security.confirm');
-    Route::post('/settings/security/disable', [SecurityController::class, 'disable'])->name('settings.security.disable');
-    Route::post('/settings/security/recovery-codes', [SecurityController::class, 'regenerateRecoveryCodes'])->name('settings.security.recovery-codes');
+    Route::post('/profile/switch', [ProfileSwitchController::class, 'switch'])->name('profile.switch');
+
+    Route::get('/settings/security', [SecurityController::class, 'show'])->middleware('admin')->name('settings.security');
+    Route::post('/settings/security/enable', [SecurityController::class, 'enable'])->middleware('admin')->name('settings.security.enable');
+    Route::post('/settings/security/confirm', [SecurityController::class, 'confirm'])->middleware('admin')->name('settings.security.confirm');
+    Route::post('/settings/security/disable', [SecurityController::class, 'disable'])->middleware('admin')->name('settings.security.disable');
+    Route::post('/settings/security/recovery-codes', [SecurityController::class, 'regenerateRecoveryCodes'])->middleware('admin')->name('settings.security.recovery-codes');
 
     Route::middleware('admin')->group(function () {
         Route::get('/finance', [FinanceController::class, 'index'])->name('finance.index');
@@ -209,6 +221,8 @@ Route::post('/vehicles/{vehicle}/archive', [VehicleController::class, 'archive']
         Route::get('/settings/company', [CompanyController::class, 'edit'])->name('settings.company');
         Route::put('/settings/company', [CompanyController::class, 'update'])->name('settings.company.update');
 
+        Route::get('/settings/wadi-sync', [WadiSyncController::class, 'index'])->name('settings.wadi-sync');
+        Route::post('/settings/wadi-sync/run', [WadiSyncController::class, 'run'])->name('settings.wadi-sync.run');
         Route::get('/settings/import', [ImportController::class, 'index'])->name('settings.import');
         Route::post('/settings/import/preview', [ImportController::class, 'preview'])->name('settings.import.preview');
         Route::post('/settings/import', [ImportController::class, 'store'])->name('settings.import.store');
@@ -216,15 +230,10 @@ Route::post('/vehicles/{vehicle}/archive', [VehicleController::class, 'archive']
         Route::put('/settings/client-volume/reference', [ClientVolumeController::class, 'updateReference'])->name('settings.client-volume.reference');
         Route::post('/settings/client-volume/simulate', [ClientVolumeController::class, 'simulate'])->name('settings.client-volume.simulate');
         Route::post('/settings/client-volume/import', [ClientVolumeController::class, 'import'])->name('settings.client-volume.import');
-        Route::get('/settings/archive', [ArchiveController::class, 'index'])->name('settings.archive');        Route::post('/settings/archive/apply', [ArchiveController::class, 'apply'])->name('settings.archive.apply');
+        Route::get('/settings/archive', [ArchiveController::class, 'index'])->name('settings.archive');
+        Route::post('/settings/archive/apply', [ArchiveController::class, 'apply'])->name('settings.archive.apply');
         Route::post('/settings/archive/restore', [ArchiveController::class, 'restore'])->name('settings.archive.restore');
         Route::post('/settings/archive/toggle', [ArchiveController::class, 'toggle'])->name('settings.archive.toggle');
         Route::get('/settings/design-system', [DesignSystemController::class, 'index'])->name('settings.design-system');
     });
 });
-
-
-
-
-
-

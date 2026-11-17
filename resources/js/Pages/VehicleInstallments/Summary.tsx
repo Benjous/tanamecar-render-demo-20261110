@@ -1,4 +1,4 @@
-﻿import { Head, Link, router } from '@inertiajs/react';
+import { Head, Link, router } from '@inertiajs/react';
 import { ArrowLeft, Plus } from 'lucide-react';
 import AppLayout from '@/Layouts/AppLayout';
 import { PageHeader } from '@/components/ui';

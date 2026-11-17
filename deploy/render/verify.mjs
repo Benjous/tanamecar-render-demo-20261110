@@ -22,9 +22,12 @@ const login = await page.goto(`${base}/login`, { waitUntil: 'domcontentloaded' }
 await page.locator('input[type=email]').fill(email);
 await page.locator('input[type=password]').fill(password);
 await page.getByRole('button', { name: 'Connexion' }).click();
-await page.waitForTimeout(2500);
-
-const dashboard = page.url() === `${base}/` && (await page.locator('body').innerText()).includes('Tableau de bord');
+await page.getByRole('heading', { name: 'Tableau de bord' }).waitFor({ timeout: 20000 }).catch(() => {});
+if (page.url() !== `${base}/`) {
+    await page.goto(`${base}/`, { waitUntil: 'domcontentloaded' });
+    await page.waitForTimeout(1000);
+}
+const dashboard = page.url() === `${base}/` && (await page.getByRole('heading', { name: 'Tableau de bord' }).count()) > 0;
 const chart = await page.getByText('Facturation mensuelle', { exact: true }).count();
 
 await page.goto(`${base}/clients`);

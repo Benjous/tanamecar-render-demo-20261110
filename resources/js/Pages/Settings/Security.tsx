@@ -29,8 +29,8 @@ export default function SecuritySettings({
 
     return (
         <AppLayout>
-            <Head title="Sécurité" />
-            <PageHeader title="Sécurité"  />
+            <Head title="Clé 2FA" />
+            <PageHeader title="Clé 2FA" />
 
             <div className="grid gap-6 xl:grid-cols-3">
                 <section className="tc-card p-5 xl:col-span-2">

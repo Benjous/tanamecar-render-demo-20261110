@@ -14,9 +14,11 @@ use Inertia\Inertia;
 
 class LoginController extends Controller
 {
-    public function create()
+    public function create(Request $request)
     {
-        return Inertia::render('Auth/Login');
+        return Inertia::render('Auth/Login', [
+            'email' => $request->query('email'),
+        ]);
     }
 
     public function store(Request $request, AuditService $audit)
@@ -72,7 +74,7 @@ class LoginController extends Controller
         $user->forceFill(['last_login_at' => now()])->save();
         $audit->log('login', 'users', $user->id);
 
-        return redirect()->intended(route('dashboard'));
+        return redirect()->intended(route('contracts.index', ['view' => 'returns']));
     }
 
     public function destroy(Request $request, AuditService $audit)

@@ -1,102 +1,93 @@
-import { Head } from '@inertiajs/react';
-import { Banknote, CarFront, Wallet } from 'lucide-react';
+import { Head, usePage } from '@inertiajs/react';
 import AppLayout from '@/Layouts/AppLayout';
-import { PageHeader, StatCard } from '@/components/ui';
-import { date, money, number } from '@/lib/utils';
+import { amount } from '@/lib/utils';
 
 type Metrics = Record<string, number>;
-type Charge = { id: number; charge_date: string; description: string; category: string; amount: string };
-type Profit = { id: number; entry_date: string; description: string; source: string | null; amount: string };
-type Credit = { id: number; credit_date: string; client_name: string | null; advance: string; remaining: string };
 
-export default function FinanceOverview({ metrics, counts, recentCharges, recentProfits, recentCredits }: {
-    metrics: Metrics;
-    counts: Record<string, number>;
-    recentCharges: Charge[];
-    recentProfits: Profit[];
-    recentCredits: Credit[];
-}) {
+function value(metrics: Metrics, key: string): string {
+    return amount(metrics[key] ?? 0);
+}
+
+export default function FinanceOverview({ metrics }: { metrics: Metrics; counts: Record<string, number>; recentCharges: unknown[]; recentProfits: unknown[]; recentCredits: unknown[] }) {
+    const { url } = usePage();
+    const bilan = new URLSearchParams(url.split('?')[1] ?? '').get('view') === 'bilan';
+    const charges = Number(metrics.charges_total ?? 0);
+    const payments = Number(metrics.payments_total ?? 0);
+    const installments = Number(metrics.installments_total ?? 0);
+    const cash = Number(metrics.cash_balance ?? 0);
+    const remaining = Number(metrics.contract_remaining ?? 0);
+    const benefit = payments - charges - installments;
+
+    if (bilan) {
+        const blockOne: Array<[string, string]> = [
+            ['CAPITAL', amount(0)],
+            ['CAISSE', amount(cash)],
+            ['RESTE', amount(remaining)],
+            ['TRAITE', amount(installments)],
+            ['BÉNÉFICE', amount(benefit)],
+        ];
+        const blockTwo: Array<[string, string]> = [
+            ['CAPITAL', amount(0)],
+            ['CAISSE', amount(cash)],
+            ['RESTE NET', amount(remaining + installments)],
+            ['TRAITE', amount(installments)],
+            ['BÉNÉFICE', amount(benefit + installments)],
+        ];
+
+        return (
+            <AppLayout>
+                <Head title="Bilan" />
+                <table className="al-data-table al-compact" style={{ width: '230px' }}>
+                    <tbody>
+                        {blockOne.map(([label, montant]) => (
+                            <tr key={`one-${label}`}><td>{label}</td><td className="al-money-cell">{montant}</td></tr>
+                        ))}
+                        <tr><td colSpan={2}>&nbsp;</td></tr>
+                        {blockTwo.map(([label, montant]) => (
+                            <tr key={`two-${label}`}><td>{label}</td><td className="al-money-cell">{montant}</td></tr>
+                        ))}
+                    </tbody>
+                </table>
+                <table className="al-data-table al-compact" style={{ width: '500px', marginTop: 8 }}>
+                    <tbody>
+                        <tr>
+                            <td>charge fixe</td>
+                            <td>charge en voiture</td>
+                            <td className="al-money-cell">{amount(charges)}</td>
+                            <td>traite</td>
+                            <td className="al-money-cell">{amount(installments)}</td>
+                            <td>Total</td>
+                            <td className="al-money-cell">{amount(charges + installments)}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </AppLayout>
+        );
+    }
+
     return (
         <AppLayout>
-            <Head title="État global" />
-            <PageHeader title="État global" />
-            <div className="mb-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-                <StatCard label="Encaissements" value={money(metrics.payments_total)} icon={<Banknote className="h-5 w-5" />} tone="emerald" />
-                <StatCard label="Charges" value={money(metrics.charges_total)} icon={<Wallet className="h-5 w-5" />} tone="rose" />
-                <StatCard label="Solde caisse" value={money(metrics.cash_balance)} icon={<Wallet className="h-5 w-5" />} tone={metrics.cash_balance >= 0 ? 'emerald' : 'rose'} />
-                <StatCard label="Reste contrats" value={money(metrics.contract_remaining)} icon={<CarFront className="h-5 w-5" />} tone="amber" />
-            </div>
+            <Head title="État Global" />
+            <table className="al-data-table" style={{ width: '760px' }}>
+                <tbody>
+                    <tr className="al-table-head al-finance-head"><td>FRAIS</td><td>ESTIMATIF</td><td>REEL</td><td>DIFFERENCE</td></tr>
+                    <tr><td>Annuel</td><td className="al-money-cell">{amount(0)}</td><td className="al-money-cell">{amount(charges)}</td><td className="al-money-cell">{amount(charges)}</td></tr>
+                    <tr><td>Par mois</td><td className="al-money-cell">{amount(0)}</td><td className="al-money-cell">{amount(charges / 12)}</td><td className="al-money-cell">{amount(charges / 12)}</td></tr>
+                    <tr><td>Par jour</td><td className="al-money-cell">{amount(0)}</td><td className="al-money-cell">{amount(charges / 365)}</td><td className="al-money-cell">{amount(charges / 365)}</td></tr>
 
-            <section className="tc-card mb-4 overflow-hidden">
-                <div className="border-b border-slate-100 px-4 py-3 font-semibold">Bilan</div>
-                <div className="overflow-x-auto">
-                    <table className="min-w-full text-sm">
-                        <tbody>
-                            {[
-                                ['Contrats', metrics.contracts_total],
-                                ['Factures', metrics.invoices_total],
-                                ['Encaissements', metrics.payments_total],
-                                ['Charges', metrics.charges_total],
-                                ['Crédits véhicules', metrics.vehicle_credits_total],
-                                ['Traites', metrics.installments_total],
-                                ['Avances locataires', metrics.client_advance],
-                                ['Restes locataires', metrics.client_remaining],
-                                ['Bénéfice enregistré', metrics.profit_total],
-                                ['Solde caisse', metrics.cash_balance],
-                                ['Reste contrats', metrics.contract_remaining],
-                            ].map(([label, value]) => (
-                                <tr key={String(label)} className="border-t border-slate-100">
-                                    <td className="px-4 py-3 text-slate-600">{label}</td>
-                                    <td className="px-4 py-3 text-right font-semibold text-brand-900">{money(Number(value))}</td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
-            </section>
+                    <tr className="al-table-head al-finance-head"><td>TVA (E)</td><td>TVA (S)</td><td>ECART</td><td /></tr>
+                    <tr><td className="al-money-cell">{amount(0)}</td><td className="al-money-cell">{amount(0)}</td><td className="al-money-cell">{amount(0)}</td><td /></tr>
 
-            <div className="mb-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-                <div className="tc-card p-4"><div className="text-xs font-semibold uppercase text-slate-500">Locations</div><div className="mt-1 text-2xl font-black">{number(counts.contracts)}</div></div>
-                <div className="tc-card p-4"><div className="text-xs font-semibold uppercase text-slate-500">Clients</div><div className="mt-1 text-2xl font-black">{number(counts.clients)}</div></div>
-                <div className="tc-card p-4"><div className="text-xs font-semibold uppercase text-slate-500">Véhicules</div><div className="mt-1 text-2xl font-black">{number(counts.vehicles)}</div></div>
-                <div className="tc-card p-4"><div className="text-xs font-semibold uppercase text-slate-500">Factures</div><div className="mt-1 text-2xl font-black">{number(counts.invoices)}</div></div>
-            </div>
+                    <tr className="al-table-head al-finance-head"><td>CRÉDIT EN COURS</td><td>CRÉDIT DÉPASSÉ</td><td>CRÉDIT</td><td /></tr>
+                    <tr><td className="al-money-cell">{amount(installments)}</td><td className="al-money-cell">{amount(0)}</td><td className="al-money-cell">{amount(installments)}</td><td /></tr>
 
-            <div className="grid gap-4 xl:grid-cols-3">
-                <section className="tc-card overflow-hidden">
-                    <div className="border-b border-slate-100 px-4 py-3 font-semibold">Charges</div>
-                    <div className="divide-y divide-slate-100">
-                        {recentCharges.length === 0 ? <div className="px-4 py-6 text-sm text-slate-500">Aucun résultat</div> : recentCharges.map((charge) => (
-                            <div key={charge.id} className="flex items-center justify-between gap-3 px-4 py-3 text-sm">
-                                <span><span className="font-medium">{charge.description}</span><span className="block text-xs text-slate-500">{date(charge.charge_date)}</span></span>
-                                <span className="font-semibold">{money(charge.amount)}</span>
-                            </div>
-                        ))}
-                    </div>
-                </section>
-                <section className="tc-card overflow-hidden">
-                    <div className="border-b border-slate-100 px-4 py-3 font-semibold">Bénéfice</div>
-                    <div className="divide-y divide-slate-100">
-                        {recentProfits.length === 0 ? <div className="px-4 py-6 text-sm text-slate-500">Aucun résultat</div> : recentProfits.map((entry) => (
-                            <div key={entry.id} className="flex items-center justify-between gap-3 px-4 py-3 text-sm">
-                                <span><span className="font-medium">{entry.description}</span><span className="block text-xs text-slate-500">{date(entry.entry_date)}</span></span>
-                                <span className="font-semibold">{money(entry.amount)}</span>
-                            </div>
-                        ))}
-                    </div>
-                </section>
-                <section className="tc-card overflow-hidden">
-                    <div className="border-b border-slate-100 px-4 py-3 font-semibold">Crédits locataires</div>
-                    <div className="divide-y divide-slate-100">
-                        {recentCredits.length === 0 ? <div className="px-4 py-6 text-sm text-slate-500">Aucun résultat</div> : recentCredits.map((credit) => (
-                            <div key={credit.id} className="flex items-center justify-between gap-3 px-4 py-3 text-sm">
-                                <span><span className="font-medium">{credit.client_name ?? 'Client'}</span><span className="block text-xs text-slate-500">{date(credit.credit_date)}</span></span>
-                                <span className="text-right"><span className="block font-semibold">{money(credit.remaining)}</span><span className="text-xs text-slate-500">{money(credit.advance)}</span></span>
-                            </div>
-                        ))}
-                    </div>
-                </section>
-            </div>
+                    <tr className="al-table-head al-finance-head"><td>TRAITE</td><td>CHARGE</td><td>TRAITE + CHARGE</td><td /></tr>
+                    <tr><td className="al-money-cell">{amount(installments)}</td><td className="al-money-cell">{amount(charges)}</td><td className="al-money-cell">{amount(installments + charges)}</td><td /></tr>
+
+                    <tr className="al-table-head al-finance-head"><td>REVENU</td><td>SOLDE</td><td>CAISSE</td><td /></tr>
+                    <tr><td className="al-money-cell">{amount(payments)}</td><td className="al-money-cell">{amount(cash)}</td><td className="al-money-cell">{amount(cash)}</td><td /></tr>
+                </tbody>
+            </table>
         </AppLayout>
     );
 }

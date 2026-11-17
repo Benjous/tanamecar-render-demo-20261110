@@ -1,7 +1,12 @@
-import { Link, router } from '@inertiajs/react';
-import { Loader2, RotateCcw, Search } from 'lucide-react';
-import { useRef, useState, type FormEvent, type ReactNode } from 'react';
-import { cn } from '@/lib/utils';
+import { router } from '@inertiajs/react';
+import { useRef, type FormEvent, type ReactNode } from 'react';
+
+export type LegacyFilterField = {
+    name: string;
+    label: string;
+    width?: string;
+    options?: Array<{ value: string; label: string }>;
+};
 
 export function AutoFilterForm({
     action,
@@ -32,7 +37,7 @@ export function AutoFilterForm({
     function onChange(event: FormEvent<HTMLFormElement>) {
         const form = event.currentTarget;
         if (timer.current) window.clearTimeout(timer.current);
-        timer.current = window.setTimeout(() => apply(form), 200);
+        timer.current = window.setTimeout(() => apply(form), 250);
     }
 
     return (
@@ -52,11 +57,15 @@ export function AutoFilterForm({
     );
 }
 
+/**
+ * Barre de recherche reference : fond gris, bordure outset, libelles au-dessus
+ * des champs, filtrage automatique pendant la saisie.
+ */
 export function FilterBar({
     action,
     filters,
     searchPlaceholder = 'Rechercher',
-    resultCount,
+    fields,
     children,
     className,
 }: {
@@ -64,45 +73,65 @@ export function FilterBar({
     filters: Record<string, string | undefined>;
     searchPlaceholder?: string;
     resultCount?: number;
+    fields?: LegacyFilterField[];
     children?: ReactNode;
     className?: string;
 }) {
-    const [loading, setLoading] = useState(false);
-    const active = Object.entries(filters).some(([key, value]) => !['sort', 'dir'].includes(key) && value !== undefined && String(value).trim() !== '');
+    const legacyFields = fields && fields.length > 0
+        ? fields
+        : [{ name: 'q', label: searchPlaceholder }];
+    const exportHref = (() => {
+        const path = action.split('?')[0];
+        if (path === '/clients') return '/exports/clients.csv';
+        if (path === '/vehicles') return '/exports/vehicles.csv';
+        if (path === '/contracts') return '/exports/contracts.csv';
+        if (path === '/invoices') return '/exports/invoices.csv';
+        if (path === '/payments') return '/exports/payments.csv';
+        if (path === '/vehicle-installments') return '/vehicle-installments/export.csv';
+        const generic = path.match(/^\/data\/([^/]+)$/);
+        return generic ? `/exports/${generic[1]}.csv` : null;
+    })();
 
     return (
-        <AutoFilterForm action={action} onLoadingChange={setLoading} className={cn('tc-card mb-4 p-4', className)}>
-            <div className="flex flex-col gap-3 xl:flex-row xl:items-end">
-                <label className="relative min-w-0 flex-1">
-                    <span className="sr-only">Recherche</span>
-                    <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-                    <input
-                        name="q"
-                        type="search"
-                        defaultValue={filters.q ?? ''}
-                        placeholder={searchPlaceholder}
-                        autoComplete="off"
-                        className="tc-input pl-9"
-                    />
-                </label>
-                {children && <div className="grid min-w-0 flex-1 gap-2 sm:grid-cols-2 xl:flex xl:flex-wrap">{children}</div>}
-                <div className="flex shrink-0 items-center gap-2">
-                    <button type="submit" className="tc-btn-primary" disabled={loading}>
-                        {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />}
-                        Filtrer
-                    </button>
-                    {active && (
-                        <Link href={action} className="tc-btn-secondary" aria-label="Réinitialiser les filtres">
-                            <RotateCcw className="h-4 w-4" />
-                            Réinitialiser
-                        </Link>
-                    )}
-                </div>
+        <AutoFilterForm action={action} className={className}>
+            <div className="al-search-box" id="SrchBox">
+                <table className="al-search-table">
+                    <tbody>
+                        <tr>
+                            {legacyFields.map((field) => (
+                                <td key={`label-${field.name}`} className="al-search-label">{field.label}</td>
+                            ))}
+                        </tr>
+                        <tr>
+                            {legacyFields.map((field) => (
+                                <td key={`input-${field.name}`} style={field.width ? { width: field.width } : undefined}>
+                                    {field.options ? (
+                                        <select name={field.name} defaultValue={filters[field.name] ?? ''} style={field.width ? { width: field.width } : undefined}>
+                                            {field.options.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
+                                        </select>
+                                    ) : (
+                                        <input
+                                            name={field.name}
+                                            type="text"
+                                            defaultValue={filters[field.name] ?? ''}
+                                            autoComplete="off"
+                                            style={field.width ? { width: field.width } : undefined}
+                                        />
+                                    )}
+                                </td>
+                            ))}
+                        </tr>
+                    </tbody>
+                </table>
+                {children ? <div className="al-search-extra">{children}</div> : null}
             </div>
-            <div className="mt-2 flex flex-wrap items-center justify-between gap-2 text-xs text-slate-500">
-                <span aria-live="polite">
-                    {loading ? 'Recherche en cours…' : resultCount !== undefined ? `${resultCount} résultat${resultCount > 1 ? 's' : ''}` : ''}
-                </span>
+            <div className="al-icon-bar">
+                <img src="/legacy/imprimer.png" alt="Imprimer" title="Imprimer" onClick={() => window.print()} />
+                {exportHref ? (
+                    <a href={exportHref} title="Exporter Excel" style={{ lineHeight: 0 }}>
+                        <img src="/legacy/excel.jpg" alt="Exporter Excel" />
+                    </a>
+                ) : null}
             </div>
         </AutoFilterForm>
     );

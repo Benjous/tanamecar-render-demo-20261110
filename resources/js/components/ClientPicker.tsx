@@ -4,8 +4,17 @@ import { useEffect, useMemo, useState } from 'react';
 export type ClientOption = {
     id: number;
     display_name?: string;
+    first_name?: string | null;
+    last_name?: string | null;
     phone?: string | null;
     address?: string | null;
+    email?: string | null;
+    identity_number?: string | null;
+    identity_document_type?: string | null;
+    license_number?: string | null;
+    country_id?: number | null;
+    country_name?: string | null;
+    country?: { name: string } | null;
     last_rental?: string | null;
 };
 
@@ -26,6 +35,7 @@ export default function ClientPicker({
     const [query, setQuery] = useState('');
     const [loading, setLoading] = useState(false);
     const [results, setResults] = useState<ClientOption[]>([]);
+    const [activeIndex, setActiveIndex] = useState(-1);
 
     const selected = useMemo(
         () => initialOptions.find((option) => String(option.id) === String(value ?? '')),
@@ -52,6 +62,7 @@ export default function ClientPicker({
                 });
                 const payload = await response.json();
                 setResults(payload.results ?? []);
+                setActiveIndex(0);
             } catch (error) {
                 if ((error as Error).name !== 'AbortError') {
                     setResults([]);
@@ -73,6 +84,22 @@ export default function ClientPicker({
         setOpen(false);
         setQuery('');
         setResults([]);
+        setActiveIndex(-1);
+    }
+
+    function onKeyDown(event: React.KeyboardEvent<HTMLInputElement>) {
+        if (event.key === 'ArrowDown') {
+            event.preventDefault();
+            setActiveIndex((current) => Math.min(results.length - 1, current + 1));
+        } else if (event.key === 'ArrowUp') {
+            event.preventDefault();
+            setActiveIndex((current) => Math.max(0, current - 1));
+        } else if (event.key === 'Enter' && activeIndex >= 0 && results[activeIndex]) {
+            event.preventDefault();
+            select(results[activeIndex]);
+        } else if (event.key === 'Escape') {
+            setOpen(false);
+        }
     }
 
     return (
@@ -115,11 +142,13 @@ export default function ClientPicker({
                             autoFocus
                             value={query}
                             onChange={(event) => setQuery(event.target.value)}
-                            placeholder="Nom, téléphone, email, identité…"
+                            onKeyDown={onKeyDown}
+                            placeholder="Nom, prénom, téléphone, identité…"
                             className="tc-input"
+                            aria-activedescendant={activeIndex >= 0 && results[activeIndex] ? `client-option-${results[activeIndex].id}` : undefined}
                         />
                     </div>
-                    <div className="max-h-64 overflow-y-auto">
+                    <div className="max-h-64 overflow-y-auto" role="listbox">
                         {loading && (
                             <div className="flex items-center gap-2 px-3 py-4 text-sm text-slate-500">
                                 <Loader2 className="h-4 w-4 animate-spin" /> Recherche…
@@ -132,12 +161,15 @@ export default function ClientPicker({
                             <div className="px-3 py-4 text-sm text-slate-400">Aucun client trouvé.</div>
                         )}
                         {!loading &&
-                            results.map((option) => (
+                            results.map((option, index) => (
                                 <button
                                     key={option.id}
+                                    id={`client-option-${option.id}`}
+                                    role="option"
                                     type="button"
+                                    onMouseEnter={() => setActiveIndex(index)}
                                     onClick={() => select(option)}
-                                    className="flex w-full items-start justify-between gap-3 border-b border-slate-50 px-3 py-2 text-left text-sm hover:bg-slate-50"
+                                    className={`flex w-full items-start justify-between gap-3 border-b border-slate-50 px-3 py-2 text-left text-sm hover:bg-slate-50 ${index === activeIndex ? 'bg-slate-50' : ''}`}
                                 >
                                     <span className="min-w-0">
                                         <span className="block font-medium text-slate-800">{option.display_name ?? `Client #${option.id}`}</span>

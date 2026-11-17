@@ -4,11 +4,14 @@ use App\Http\Middleware\EnsureAdmin;
 use App\Http\Middleware\EnsurePermission;
 use App\Http\Middleware\EnsureUserIsActive;
 use App\Http\Middleware\HandleInertiaRequests;
+use App\Http\Middleware\HandleOfflineOperations;
 use App\Http\Middleware\SecurityHeaders;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
+use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -25,6 +28,7 @@ return Application::configure(basePath: dirname(__DIR__))
             SecurityHeaders::class,
             HandleInertiaRequests::class,
             EnsureUserIsActive::class,
+            HandleOfflineOperations::class,
         ]);
         $middleware->alias([
             'permission' => EnsurePermission::class,
@@ -35,4 +39,14 @@ return Application::configure(basePath: dirname(__DIR__))
         $exceptions->shouldRenderJsonWhen(
             fn (Request $request) => $request->is('api/*') || $request->expectsJson(),
         );
+
+        $exceptions->render(function (HttpExceptionInterface $exception, Request $request) {
+            if ($exception->getStatusCode() === 403 && ! $request->expectsJson() && ! $request->is('api/*')) {
+                return Inertia::render('Errors/Forbidden')
+                    ->toResponse($request)
+                    ->setStatusCode(403);
+            }
+
+            return null;
+        });
     })->create();

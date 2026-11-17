@@ -1,11 +1,12 @@
 <?php
 
+use App\Services\ArchiveService;
+use App\Services\AutolocTraiteImportService;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
-use App\Services\ArchiveService;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
-use App\Services\AutolocTraiteImportService;
+use Illuminate\Support\Facades\Schedule;
 
 Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
@@ -29,18 +30,21 @@ Artisan::command('autoloc:traites-import {file} {target} {--dry-run}', function 
     };
     if (! $database) {
         $this->error('Cible refusée. Valeurs autorisées : prep, live.');
+
         return 2;
     }
 
     $file = (string) $this->argument('file');
     if (! is_file($file)) {
         $this->error('Fichier JSON introuvable.');
+
         return 2;
     }
     $dataset = json_decode(file_get_contents($file), true, flags: JSON_THROW_ON_ERROR);
     $preview = $importer->preview($dataset);
     if ($this->option('dry-run')) {
         $this->line(json_encode(['target' => $target, 'database' => $database, 'dry_run' => true] + $preview, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+
         return 0;
     }
 
@@ -67,5 +71,11 @@ Artisan::command('autoloc:traites-import {file} {target} {--dry-run}', function 
         throw new RuntimeException('Contrôle post-import en échec. La transaction a été annulée.');
     }
     $this->line(json_encode(['target' => $target, 'database' => $database, 'source' => $target === 'live' ? 'tanamecar_prep_autoloc' : 'json dry run', 'dry_run' => false] + $result, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+
     return 0;
 })->purpose('Simule ou importe les traites Autoloc uniquement dans les bases de préparation ou live');
+
+Schedule::command('wadi:sync')
+    ->everyFifteenMinutes()
+    ->withoutOverlapping(25)
+    ->when(fn (): bool => (bool) config('wadi.enabled'));

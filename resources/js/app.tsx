@@ -2,8 +2,12 @@ import { createInertiaApp } from '@inertiajs/react';
 import { createRoot } from 'react-dom/client';
 import type { ComponentType } from 'react';
 import { theme } from '@/lib/theme';
+import { installOfflineSupport } from '@/lib/offline';
+import '../css/legacy.css';
 
 const pages = import.meta.glob('./Pages/**/*.tsx') as Record<string, () => Promise<{ default: ComponentType }>>;
+
+installOfflineSupport();
 
 createInertiaApp({
     title: (title) => (title ? `${title} - TanameCar` : 'TanameCar'),

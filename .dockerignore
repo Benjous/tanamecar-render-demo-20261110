@@ -19,7 +19,9 @@ vendor
 test-results
 tests
 playwright.config.ts
-scripts
+scripts/*
+!scripts/wadi-fetch-snapshot.mjs
+!scripts/wadi-fetch-server.mjs
 private
 docs
 RAPPORT-FINAL.md

@@ -27,4 +27,9 @@ php artisan config:cache >/dev/null 2>&1 || true
 php artisan route:cache >/dev/null 2>&1 || true
 php artisan view:cache >/dev/null 2>&1 || true
 
+# Collecteur WADI HTTP + planificateur Laravel. Les deux boucles redémarrent
+# automatiquement après une coupure du processus enfant.
+(su -s /bin/sh www-data -c 'while true; do node scripts/wadi-fetch-server.mjs; sleep 10; done') >&2 &
+(su -s /bin/sh www-data -c 'while true; do php artisan schedule:work; sleep 10; done') >&2 &
+
 exec apache2-foreground

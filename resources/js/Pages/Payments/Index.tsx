@@ -18,7 +18,7 @@ type Payment = {
 export default function PaymentsIndex({ payments, filters, methods }: { payments: Payment[]; filters: Record<string, string>; methods: string[] }) {
     const columns: VirtualColumn<Payment>[] = [
         { key: 'contract', label: 'Contrat', width: '80px', sortValue: (payment) => payment.contract?.reference ?? '', render: (payment) => <span className="font-semibold text-brand-800">{payment.contract?.reference ?? 'Non renseigné'}</span> },
-        { key: 'client', label: 'Client', width: 'minmax(110px, 1.2fr)', sortValue: (payment) => payment.contract?.client?.display_name ?? '', render: (payment) => payment.contract?.client?.display_name ?? 'Non renseigné' },
+        { key: 'client', label: 'Client', width: 'minmax(150px, 1.2fr)', className: 'workspace-cell-wrap', sortValue: (payment) => payment.contract?.client?.display_name ?? '', render: (payment) => payment.contract?.client?.display_name ?? 'Non renseigné' },
         { key: 'amount', label: 'Montant', width: '90px', render: (payment) => <span className="font-semibold">{money(payment.amount)}</span> },
         { key: 'method', label: 'Mode', width: '80px', render: (payment) => payment.payment_method },
         { key: 'status', label: 'Statut', width: '85px', render: (payment) => <Badge tone={statusTone(payment.payment_status)}>{payment.payment_status}</Badge> },
@@ -31,7 +31,7 @@ export default function PaymentsIndex({ payments, filters, methods }: { payments
             <PageHeader
                 title="Paiements"
                 
-                actions={<><a href={exportUrl('payments', filters)} className="tc-btn-secondary">Exporter CSV</a><Link href="/payments/create" className="tc-btn-primary"><Plus className="h-4 w-4" /> Nouveau paiement</Link></>}
+                actions={<a href={exportUrl('payments', filters)} className="tc-btn-secondary">Exporter CSV</a>}
             />
 
             <FilterBar action="/payments" filters={filters} searchPlaceholder="Contrat, client, téléphone, mode, montant" resultCount={payments.length}>

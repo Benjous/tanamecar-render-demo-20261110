@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use App\Models\Concerns\ExcludesArchived;
-
 use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -23,18 +22,21 @@ class Contract extends Model
     protected function casts(): array
     {
         return [
-        'departure_at' => 'datetime',
-        'return_at' => 'datetime',
-        'returned' => 'boolean',
-        'client_is_main_driver' => 'boolean',
-        'daily_rate' => 'decimal:2',
-        'days' => 'decimal:2',
-        'total_amount' => 'decimal:2',
-        'paid_amount_recorded' => 'decimal:2',
-        'remaining_recorded' => 'decimal:2',
-        'deductible' => 'decimal:2',
-        'deposit' => 'decimal:2',
-        'legacy_payload' => 'array',
+            'departure_at' => 'datetime',
+            'return_at' => 'datetime',
+            'returned' => 'boolean',
+            'client_is_main_driver' => 'boolean',
+            'daily_rate' => 'decimal:2',
+            'days' => 'decimal:2',
+            'discount_per_day' => 'decimal:2',
+            'discount_amount' => 'decimal:2',
+            'vat_applicable' => 'boolean',
+            'total_amount' => 'decimal:2',
+            'paid_amount_recorded' => 'decimal:2',
+            'remaining_recorded' => 'decimal:2',
+            'deductible' => 'decimal:2',
+            'deposit' => 'decimal:2',
+            'legacy_payload' => 'array',
         ];
     }
 
@@ -113,4 +115,3 @@ class Contract extends Model
             ->where('documentable_type', 'slv_contrats');
     }
 }
-

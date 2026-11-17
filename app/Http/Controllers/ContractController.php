@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Client;
 use App\Models\Contract;
 use App\Models\Document;
 use App\Models\Employee;
@@ -11,6 +10,7 @@ use App\Models\Vehicle;
 use App\Services\ArchiveService;
 use App\Services\AuditService;
 use App\Services\FileStoreService;
+use App\Services\NotificationService;
 use App\Services\PdfService;
 use App\Services\SearchService;
 use App\Services\SequenceService;
@@ -27,12 +27,18 @@ class ContractController extends Controller
         $query = ArchiveService::exclude(DB::table('contracts'), 'contracts', 'contracts.id')
             ->leftJoin('clients', 'clients.id', '=', 'contracts.client_id')
             ->leftJoin('vehicles', 'vehicles.id', '=', 'contracts.vehicle_id')
+            ->leftJoin('brands', 'brands.id', '=', 'vehicles.brand_id')
+            ->leftJoin('vehicle_models', 'vehicle_models.id', '=', 'vehicles.model_id')
+            ->leftJoin('colors', 'colors.id', '=', 'vehicles.color_id')
+            ->leftJoin('vehicle_categories', 'vehicle_categories.id', '=', 'vehicles.category_id')
             ->leftJoin('v_contract_financials as f', 'f.id', '=', 'contracts.id')
             ->select(
                 'contracts.id', 'contracts.reference', 'contracts.departure_at', 'contracts.return_at',
                 'contracts.total_amount', 'contracts.returned', 'contracts.data_quality_status',
-                'clients.display_name as client_display_name',
+                'clients.display_name as client_display_name', 'clients.phone as client_phone',
                 'vehicles.display_name as vehicle_display_name', 'vehicles.plate_number as vehicle_plate_number',
+                'brands.name as vehicle_brand', 'vehicle_models.name as vehicle_model',
+                'colors.name as vehicle_color', 'vehicle_categories.name as vehicle_category',
                 'f.paid_amount_calculated', 'f.remaining_calculated', 'f.has_mismatch',
             );
 
@@ -52,13 +58,60 @@ class ContractController extends Controller
                 'vehicles.plate_number',
             ], $q);
         }
+        $statusFilter = $request->string('status')->toString();
+        $view = $request->string('view')->toString();
+        $dateColumn = ($statusFilter === 'overdue' || $view === 'returns') ? 'contracts.return_at' : 'contracts.departure_at';
+        if ($date = $request->date('date')) {
+            $query->whereDate($dateColumn, $date->toDateString());
+        }
+        if ($heure = trim($request->string('heure')->toString())) {
+            $query->whereRaw("to_char({$dateColumn}, 'HH24:MI') like ?", ["{$heure}%"]);
+        }
+        if ($nom = trim($request->string('nom')->toString())) {
+            $query->where('clients.last_name', 'ilike', "%{$nom}%");
+        }
+        if ($prenom = trim($request->string('prenom')->toString())) {
+            $query->where('clients.first_name', 'ilike', "%{$prenom}%");
+        }
+        if ($voiture = trim($request->string('voiture')->toString())) {
+            $query->where(function ($sub) use ($voiture) {
+                $sub->where('vehicles.display_name', 'ilike', "%{$voiture}%")
+                    ->orWhere('vehicles.plate_number', 'ilike', "%{$voiture}%");
+            });
+        }
+        if ($tel = trim($request->string('tel')->toString())) {
+            $query->where('clients.phone', 'ilike', "%{$tel}%");
+        }
+        if ($numero = trim($request->string('numero')->toString())) {
+            if (ctype_digit($numero)) {
+                $query->where('contracts.id', (int) $numero);
+            }
+        }
+        if ($marque = trim($request->string('marque')->toString())) {
+            $query->where('brands.name', 'ilike', "%{$marque}%");
+        }
+        if ($type = trim($request->string('type')->toString())) {
+            $query->where('vehicle_models.name', 'ilike', "%{$type}%");
+        }
+        if ($couleur = trim($request->string('couleur')->toString())) {
+            $query->where('colors.name', 'ilike', "%{$couleur}%");
+        }
+        if ($numImmatr = trim($request->string('num_immatr')->toString())) {
+            $query->where('vehicles.plate_number', 'ilike', "%{$numImmatr}%");
+        }
 
-        match ($request->string('status')->toString()) {
+        match ($statusFilter) {
             'open' => $query->where('contracts.returned', false),
             'returned' => $query->where('contracts.returned', true),
             'overdue' => $query->where('contracts.returned', false)->whereNotNull('contracts.return_at')->where('contracts.return_at', '<', CarbonImmutable::now(Contract::OPERATIONS_TIMEZONE)->startOfDay()->utc()),
             default => null,
         };
+        if ($view === 'returns') {
+            $query->where('contracts.returned', false)->whereNotNull('contracts.return_at');
+            if ($statusFilter !== 'overdue') {
+                $query->where('contracts.return_at', '>=', CarbonImmutable::now(Contract::OPERATIONS_TIMEZONE)->startOfDay()->utc());
+            }
+        }
 
         $due = $request->string('due')->toString();
         if (in_array($due, ['today', 'tomorrow', 'after_tomorrow', 'month'], true)) {
@@ -84,7 +137,7 @@ class ContractController extends Controller
         }
 
         $sort = in_array($request->string('sort')->toString(), ['reference', 'departure_at', 'return_at', 'total_amount', 'created_at'], true)
-            ? $request->string('sort')->toString() : 'departure_at';
+            ? $request->string('sort')->toString() : (($view === 'returns' || $statusFilter === 'overdue') ? 'return_at' : 'departure_at');
         $dir = $request->string('dir')->toString() === 'desc' ? 'desc' : 'asc';
         $query->orderBy("contracts.{$sort}", $dir);
 
@@ -99,8 +152,15 @@ class ContractController extends Controller
             'paid_amount_calculated' => $row->paid_amount_calculated,
             'remaining_calculated' => $row->remaining_calculated,
             'has_mismatch' => (bool) $row->has_mismatch,
-            'client' => $row->client_display_name ? ['display_name' => $row->client_display_name] : null,
-            'vehicle' => $row->vehicle_display_name ? ['display_name' => $row->vehicle_display_name, 'plate_number' => $row->vehicle_plate_number] : null,
+            'client' => $row->client_display_name ? ['display_name' => $row->client_display_name, 'phone' => $row->client_phone] : null,
+            'vehicle' => $row->vehicle_display_name ? [
+                'display_name' => $row->vehicle_display_name,
+                'plate_number' => $row->vehicle_plate_number,
+                'brand' => $row->vehicle_brand,
+                'model' => $row->vehicle_model,
+                'color' => $row->vehicle_color,
+                'category' => $row->vehicle_category,
+            ] : null,
         ]);
 
         $today = CarbonImmutable::now(Contract::OPERATIONS_TIMEZONE)->startOfDay();
@@ -129,7 +189,7 @@ class ContractController extends Controller
 
         return Inertia::render('Contracts/Index', [
             'contracts' => $contracts,
-            'filters' => $request->only(['q', 'status', 'due', 'date_from', 'date_to', 'sort', 'dir']),
+            'filters' => $request->only(['q', 'status', 'due', 'date_from', 'date_to', 'sort', 'dir', 'date', 'heure', 'nom', 'prenom', 'voiture', 'tel', 'numero', 'marque', 'type', 'couleur', 'num_immatr', 'view']),
             'counters' => [
                 'overdue' => (int) $counts->overdue,
                 'due_today' => (int) $counts->due_today,
@@ -187,7 +247,7 @@ class ContractController extends Controller
         });
 
         $audit->log('create', 'contracts', $contract->id, null, $contract->toArray());
-        app(\App\Services\NotificationService::class)->notifyAdmins(
+        app(NotificationService::class)->notifyAdmins(
             'contract.created',
             'Nouvelle location',
             "{$contract->reference} - ".($contract->client?->display_name ?? 'client non renseignÃ©'),
@@ -246,7 +306,7 @@ class ContractController extends Controller
     public function edit(Contract $contract)
     {
         $this->authorizeRecord($contract, 'update');
-        $contract->load(['client', 'firstDriver', 'secondDriver']);
+        $contract->load(['client.country', 'firstDriver.country', 'secondDriver.country']);
         $clients = collect([$contract->client, $contract->firstDriver, $contract->secondDriver])
             ->filter()
             ->unique('id')
@@ -297,7 +357,7 @@ class ContractController extends Controller
         }
 
         $audit->log('return', 'contracts', $contract->id, $before, $contract->fresh()->toArray());
-        app(\App\Services\NotificationService::class)->notifyAdmins(
+        app(NotificationService::class)->notifyAdmins(
             'contract.returned',
             'Retour de voiture',
             "{$contract->reference} - voiture rÃ©ceptionnÃ©",
@@ -386,6 +446,9 @@ class ContractController extends Controller
             'return_km' => ['nullable', 'numeric', 'min:0'],
             'daily_rate' => ['required', 'numeric', 'min:0'],
             'days' => ['required', 'numeric', 'min:0'],
+            'discount_per_day' => ['nullable', 'numeric', 'min:0'],
+            'discount_amount' => ['nullable', 'numeric', 'min:0'],
+            'vat_applicable' => ['boolean'],
             'total_amount' => ['required', 'numeric', 'min:0'],
             'deposit' => ['nullable', 'numeric', 'min:0'],
             'deductible' => ['nullable', 'numeric', 'min:0'],
@@ -396,4 +459,3 @@ class ContractController extends Controller
         ]);
     }
 }
-

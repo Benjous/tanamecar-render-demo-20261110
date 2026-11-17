@@ -1,39 +1,86 @@
-import { Head } from '@inertiajs/react';
+import { Head, Link } from '@inertiajs/react';
 import AppLayout from '@/Layouts/AppLayout';
 import { FilterBar } from '@/components/FilterForm';
 import { VirtualDataList, type VirtualColumn } from '@/components/VirtualDataList';
-import { PageHeader } from '@/components/ui';
-import { money } from '@/lib/utils';
+import { amount, isoDate } from '@/lib/utils';
 
-type Row = Record<string, any> & { id: number; source_id: number; company: string | null; vehicle_name: string; client_name: string | null; vehicle: any; total_recorded: string | null; price_recorded: string | null; profit_recorded: string | null; advance_recorded: string | null; credit_recorded: string | null; match_status: string };
+type Row = {
+    id: number;
+    vehicle_name: string;
+    plate_number: string;
+    company: string | null;
+    status: string;
+    operating_mode: string;
+    daily_rate: string | number | null;
+    km: string | number | null;
+    brand: string | null;
+    model: string | null;
+    category: string | null;
+    contract_reference: string | null;
+    client_name: string | null;
+    return_at: string | null;
+};
 
-export default function Index({ rows, filters, totals, documentedGap, counts }: { rows: Row[]; filters: Record<string, string>; totals: Record<string, number>; documentedGap: number; counts: Record<string, number> }) {
+const statusLabels: Record<string, string> = {
+    disponible: 'Disponible',
+    en_location: 'En location',
+    en_reparation: 'Entretien',
+    hors_service: 'Hors service',
+};
+
+export default function Index({ rows, filters }: { rows: Row[]; filters: Record<string, string>; counts: { total: number; in_contract: number } }) {
     const columns: VirtualColumn<Row>[] = [
-        { key: 'vehicle', label: 'Voiture', width: 'minmax(140px, 1.2fr)', sortValue: (row) => [row.vehicle?.display_name ?? row.vehicle_name, row.vehicle?.plate_number ?? row.company].filter(Boolean).join(' - '), render: (row) => <span>{[row.vehicle?.display_name ?? row.vehicle_name, row.vehicle?.plate_number ?? row.company].filter(Boolean).join(' - ')}</span> },
-        { key: 'client', label: 'Client enregistré', width: 'minmax(110px, 1fr)', sortValue: (row) => row.client_name ?? '', render: (row) => row.client_name ?? 'Non renseigné' },
-        { key: 'days', label: 'Jours', width: '60px', sortValue: (row) => Number(row.days_recorded ?? 0), render: (row) => row.days_recorded ?? 'Non renseigné' },
-        { key: 'rate', label: 'Prix / jour', width: '75px', sortValue: (row) => Number(row.rate_recorded ?? 0), render: (row) => money(row.rate_recorded) },
-        { key: 'total', label: 'Total', width: '85px', sortValue: (row) => Number(row.total_recorded ?? 0), render: (row) => money(row.total_recorded) },
-        { key: 'price', label: 'Prix', width: '85px', sortValue: (row) => Number(row.price_recorded ?? 0), render: (row) => money(row.price_recorded) },
-        { key: 'profit', label: 'Bénéfice', width: '85px', sortValue: (row) => Number(row.profit_recorded ?? 0), render: (row) => money(row.profit_recorded) },
-        { key: 'advance', label: 'Avance', width: '85px', sortValue: (row) => Number(row.advance_recorded ?? 0), render: (row) => money(row.advance_recorded) },
-        { key: 'credit', label: 'Crédit', width: '85px', sortValue: (row) => Number(row.credit_recorded ?? 0), render: (row) => money(row.credit_recorded) },
+        { key: 'id', label: 'N°', width: '50px', sortValue: (row) => row.id, render: (row) => row.id },
+        { key: 'vehicle', label: 'VOITURE', width: '220px', sortValue: (row) => `${row.vehicle_name} ${row.plate_number}`, render: (row) => `${row.vehicle_name} · ${row.plate_number}` },
+        { key: 'company', label: 'SOCIÉTÉ', width: '120px', sortValue: (row) => row.company ?? '', render: (row) => row.company ?? 'Non renseigné' },
+        { key: 'category', label: 'CATÉGORIE', width: '100px', sortValue: (row) => row.category ?? '', render: (row) => row.category ?? '-' },
+        { key: 'status', label: 'STATUT', width: '100px', sortValue: (row) => row.operating_mode === 'sous_location' ? 'sous_location' : row.status, render: (row) => (row.operating_mode === 'sous_location' ? 'Sous-location' : (statusLabels[row.status] ?? row.status)) },
+        { key: 'rate', label: 'PRIX / JOUR', width: '95px', sortValue: (row) => Number(row.daily_rate ?? 0), render: (row) => amount(row.daily_rate) },
+        { key: 'km', label: 'KM', width: '80px', sortValue: (row) => Number(row.km ?? 0), render: (row) => row.km ?? '-' },
+        { key: 'contract', label: 'CONTRAT', width: '105px', sortValue: (row) => row.contract_reference ?? '', render: (row) => row.contract_reference ?? '-' },
+        { key: 'client', label: 'CLIENT', sortValue: (row) => row.client_name ?? '', render: (row) => row.client_name ?? '-' },
+        { key: 'return', label: 'RETOUR PRÉVU', width: '105px', sortValue: (row) => row.return_at ?? '', render: (row) => (row.return_at ? isoDate(row.return_at) : '-') },
     ];
+
     return (
         <AppLayout>
             <Head title="Sous-location" />
-            <PageHeader title="Sous-location"  />
-            <div className="mb-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
-                <div className="tc-card p-3"><div className="text-xs text-slate-500">Total enregistré</div><div className="font-bold">{money(totals.total)}</div></div>
-                <div className="tc-card p-3"><div className="text-xs text-slate-500">Prix</div><div className="font-bold">{money(totals.price)}</div></div>
-                <div className="tc-card p-3"><div className="text-xs text-slate-500">Bénéfice</div><div className="font-bold">{money(totals.profit)}</div></div>
-                <div className="tc-card p-3"><div className="text-xs text-slate-500">Avance</div><div className="font-bold">{money(totals.advance)}</div></div>
-                <div className="tc-card p-3"><div className="text-xs text-slate-500">Crédit</div><div className="font-bold">{money(totals.credit)}</div></div>
+            <div className="al-return-heading">
+                <strong>Véhicules en sous-location</strong>
+                <span>{rows.length} véhicules</span>
             </div>
-            <FilterBar action="/sub-rentals" filters={filters} searchPlaceholder="Voiture, client, société, plaque, montant" resultCount={rows.length}>
-                <select name="match" aria-label="Rapprochement" defaultValue={filters.match ?? ''} className="tc-input"><option value="">Tous les rapprochements</option><option value="matched">Rapprochées</option><option value="unmatched">Non rapprochées</option></select>
-            </FilterBar>
-            <VirtualDataList rows={rows} columns={columns} rowKey={(row) => row.id} href={(row) => `/sub-rentals/${row.id}`} totalLabel={`${rows.length} lignes de sous-location`} heightClass="max-h-[calc(100vh-360px)] min-h-[320px]" />
+            <FilterBar
+                action="/sub-rentals"
+                filters={filters}
+                fields={[
+                    { name: 'numero', label: 'N°', width: '50px' },
+                    { name: 'voiture', label: 'Voiture' },
+                    { name: 'societe', label: 'Société' },
+                    {
+                        name: 'statut',
+                        label: 'Statut',
+                        options: [
+                            { value: '', label: 'Tous' },
+                            { value: 'disponible', label: 'Disponible' },
+                            { value: 'en_location', label: 'En location' },
+                            { value: 'en_reparation', label: 'Entretien' },
+                            { value: 'hors_service', label: 'Hors service' },
+                        ],
+                    },
+                ]}
+            />
+            <div className="mb-2 text-[11px] text-slate-500">
+                <span>Mode dans la fiche véhicule.</span> <Link href="/vehicles?mode=sous_location" className="text-brand-700 underline">Gérer les véhicules</Link>
+            </div>
+            <VirtualDataList
+                rows={rows}
+                columns={columns}
+                rowKey={(row) => row.id}
+                href={(row) => `/vehicles/${row.id}/edit`}
+                totalLabel={`${rows.length} véhicules en sous-location`}
+                actions={(row) => <Link href={`/vehicles/${row.id}/edit`} className="al-link-modifier">Modifier</Link>}
+                empty="Aucun véhicule en sous-location"
+            />
         </AppLayout>
     );
 }

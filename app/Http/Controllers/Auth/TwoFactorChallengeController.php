@@ -54,6 +54,6 @@ class TwoFactorChallengeController extends Controller
         $user->forceFill(['last_login_at' => now()])->save();
         $audit->log('login_2fa', 'users', $user->id);
 
-        return redirect()->intended(route('dashboard'));
+        return redirect()->intended(route('clients.index'));
     }
 }

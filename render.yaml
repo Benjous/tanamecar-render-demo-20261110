@@ -58,3 +58,25 @@ services:
         value: "12"
       - key: RUN_MIGRATIONS
         value: "true"
+      - key: WADI_BASE_URL
+        value: https://app.wadi.dev
+      - key: WADI_ACCOUNT
+        value: tanamecar
+      - key: WADI_EMAIL
+        sync: false
+      - key: WADI_PASSWORD
+        sync: false
+      - key: WADI_SYNC_ENABLED
+        value: "true"
+      - key: WADI_SYNC_INTERVAL
+        value: "15"
+      - key: WADI_SYNC_APPLY
+        value: "true"
+      - key: WADI_SYNC_CREATE_MISSING
+        value: "true"
+      - key: WADI_FETCH_URL
+        value: http://127.0.0.1:8899/fetch
+      - key: WADI_FETCH_PORT
+        value: "8899"
+      - key: WADI_FETCH_TOKEN
+        sync: false

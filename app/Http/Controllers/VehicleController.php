@@ -5,8 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Brand;
 use App\Models\Color;
 use App\Models\Vehicle;
-use App\Models\VehicleDeadline;
 use App\Models\VehicleCategory;
+use App\Models\VehicleDeadline;
 use App\Models\VehicleModel;
 use App\Services\AuditService;
 use App\Services\DeadlineService;
@@ -41,6 +41,23 @@ class VehicleController extends Controller
                     ->orWhereHas('category', fn ($category) => $search->apply($category, ['name'], $q));
             });
         }
+        if ($numero = trim($request->string('numero')->toString())) {
+            if (ctype_digit($numero)) {
+                $query->where('vehicles.id', (int) $numero);
+            }
+        }
+        if ($marque = trim($request->string('marque')->toString())) {
+            $query->whereHas('brand', fn ($brand) => $brand->where('name', 'ilike', "%{$marque}%"));
+        }
+        if ($type = trim($request->string('type')->toString())) {
+            $query->whereHas('model', fn ($model) => $model->where('name', 'ilike', "%{$type}%"));
+        }
+        if ($couleur = trim($request->string('couleur')->toString())) {
+            $query->whereHas('color', fn ($color) => $color->where('name', 'ilike', "%{$couleur}%"));
+        }
+        if ($numImmatr = trim($request->string('num_immatr')->toString())) {
+            $query->where('vehicles.plate_number', 'ilike', "%{$numImmatr}%");
+        }
         if ($brandId = $request->integer('brand_id')) {
             $query->where('brand_id', $brandId);
         }
@@ -66,7 +83,7 @@ class VehicleController extends Controller
 
         return Inertia::render('Vehicles/Index', [
             'vehicles' => $query->orderBy('display_name')->get(),
-            'filters' => $request->only(['q', 'status', 'mode', 'brand_id', 'category_id']),
+            'filters' => $request->only(['q', 'status', 'mode', 'brand_id', 'category_id', 'numero', 'marque', 'type', 'couleur', 'num_immatr']),
             'brands' => Brand::orderBy('name')->get(['id', 'name']),
             'categories' => VehicleCategory::orderBy('name')->get(['id', 'name']),
             'counters' => [
@@ -195,4 +212,3 @@ class VehicleController extends Controller
         ]);
     }
 }
-

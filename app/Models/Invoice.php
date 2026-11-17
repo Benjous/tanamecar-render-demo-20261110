@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use App\Models\Concerns\ExcludesArchived;
-
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -21,18 +20,19 @@ class Invoice extends Model
     protected function casts(): array
     {
         return [
-        'issued_at' => 'date',
-        'due_at' => 'date',
-        'cancelled_at' => 'datetime',
-        'validated' => 'boolean',
-        'discount_value' => 'decimal:2',
-        'discount_percent' => 'decimal:2',
-        'subtotal_before_discount' => 'decimal:2',
-        'subtotal' => 'decimal:2',
-        'vat_value' => 'decimal:2',
-        'total_before_discount' => 'decimal:2',
-        'total' => 'decimal:2',
-        'legacy_payload' => 'array',
+            'issued_at' => 'date',
+            'due_date' => 'date',
+            'due_at' => 'date',
+            'cancelled_at' => 'datetime',
+            'validated' => 'boolean',
+            'discount_value' => 'decimal:2',
+            'discount_percent' => 'decimal:2',
+            'subtotal_before_discount' => 'decimal:2',
+            'subtotal' => 'decimal:2',
+            'vat_value' => 'decimal:2',
+            'total_before_discount' => 'decimal:2',
+            'total' => 'decimal:2',
+            'legacy_payload' => 'array',
         ];
     }
 

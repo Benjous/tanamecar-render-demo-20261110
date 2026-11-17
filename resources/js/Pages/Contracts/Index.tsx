@@ -1,10 +1,9 @@
 import { Head, Link } from '@inertiajs/react';
-import { AlertTriangle, CalendarClock, CarFront, Plus } from 'lucide-react';
+import { useMemo, useState } from 'react';
 import AppLayout from '@/Layouts/AppLayout';
 import { FilterBar } from '@/components/FilterForm';
 import { VirtualDataList, type VirtualColumn } from '@/components/VirtualDataList';
-import { Badge, EmptyState, PageHeader, StatCard } from '@/components/ui';
-import { date, exportUrl, money, number, statusTone } from '@/lib/utils';
+import { amount, isoDate } from '@/lib/utils';
 
 type Contract = {
     id: number;
@@ -17,97 +16,183 @@ type Contract = {
     has_mismatch: boolean;
     returned: boolean;
     data_quality_status: string;
-    client?: { display_name: string };
-    vehicle?: { display_name: string; plate_number: string } | null;
+    client?: { display_name: string; phone?: string | null };
+    vehicle?: { display_name: string; plate_number: string; brand?: string | null; model?: string | null; color?: string | null; category?: string | null } | null;
+    row_number?: number;
 };
 
-export default function ContractsIndex({ contracts, filters, counters }: { contracts: Contract[]; filters: Record<string, string>; counters: any }) {
-    const columns: VirtualColumn<Contract>[] = [
+function timeOf(value: string | null | undefined): string {
+    if (!value) return '';
+    const parsed = new Date(value);
+    if (Number.isNaN(parsed.getTime())) return '';
+    return new Intl.DateTimeFormat('fr-FR', { hour: '2-digit', minute: '2-digit' }).format(parsed);
+}
+
+function dayKey(value: string | null | undefined): string {
+    if (!value) return '';
+    const parsed = new Date(value);
+    if (Number.isNaN(parsed.getTime())) return '';
+    return parsed.toLocaleDateString('en-CA', { timeZone: 'Africa/Casablanca' });
+}
+
+function addDays(key: string, days: number): string {
+    const date = new Date(`${key}T12:00:00Z`);
+    date.setUTCDate(date.getUTCDate() + days);
+    return date.toISOString().slice(0, 10);
+}
+
+function returnState(value: string | null | undefined, today: string, tomorrow: string, afterTomorrow: string): { label: string; tone: string; key: string } {
+    const key = dayKey(value);
+    if (!key) return { label: 'Date inconnue', tone: 'slate', key: 'unknown' };
+    if (key < today) return { label: 'En retard', tone: 'red', key: 'late' };
+    if (key === today) return { label: "Aujourd'hui", tone: 'orange', key: 'today' };
+    if (key === tomorrow) return { label: 'Demain', tone: 'orange', key: 'tomorrow' };
+    if (key === afterTomorrow) return { label: 'Après-demain', tone: 'orange', key: 'after' };
+    return { label: 'À venir', tone: 'green', key: 'upcoming' };
+}
+
+export default function ContractsIndex({ contracts, filters }: { contracts: Contract[]; filters: Record<string, string> }) {
+    const status = filters.status ?? '';
+    const returnsView = filters.view === 'returns';
+    const rentalView = filters.view === 'rental';
+    const overdueView = returnsView && status === 'overdue';
+    const [returnFilter, setReturnFilter] = useState<'all' | 'late' | 'today' | 'tomorrow' | 'after' | 'upcoming'>('all');
+    const today = new Date().toLocaleDateString('en-CA', { timeZone: 'Africa/Casablanca' });
+    const tomorrow = addDays(today, 1);
+    const afterTomorrow = addDays(today, 2);
+    const returnGroups = useMemo(() => {
+        const groups = { all: 0, late: 0, today: 0, tomorrow: 0, after: 0, upcoming: 0, unknown: 0 };
+        for (const contract of contracts) {
+            const key = returnState(contract.return_at, today, tomorrow, afterTomorrow).key as keyof typeof groups;
+            groups.all += 1;
+            if (key in groups) groups[key] += 1;
+        }
+        return groups;
+    }, [contracts, today, tomorrow, afterTomorrow]);
+    const returnRows = useMemo(() => returnsView && !overdueView && returnFilter !== 'all'
+        ? contracts.filter((contract) => returnState(contract.return_at, today, tomorrow, afterTomorrow).key === returnFilter)
+        : contracts, [contracts, returnsView, overdueView, returnFilter, today, tomorrow, afterTomorrow]);
+
+    const contractColumns: VirtualColumn<Contract>[] = [
+        { key: 'id', label: 'N°', width: '55px', sortValue: (contract) => contract.id, render: (contract) => contract.id },
+        { key: 'client', label: 'LOCATAIRE', width: '30%', sortValue: (contract) => contract.client?.display_name ?? '', render: (contract) => contract.client?.display_name ?? '' },
+        { key: 'departure', label: 'DATE DE CONTRAT', width: '160px', sortValue: (contract) => contract.departure_at, render: (contract) => isoDate(contract.departure_at) },
+        { key: 'vehicle', label: 'VOITURE', sortValue: (contract) => contract.vehicle?.display_name ?? '', render: (contract) => contract.vehicle?.display_name ?? '' },
+    ];
+
+    const returnsColumns: VirtualColumn<Contract>[] = [
+        { key: 'date', label: 'DATE', width: '130px', sortValue: (contract) => contract.return_at, render: (contract) => isoDate(contract.return_at) },
+        { key: 'heure', label: 'HEURE', width: '80px', render: (contract) => timeOf(contract.return_at) },
+        { key: 'vehicle', label: 'VOITURE', width: '300px', sortValue: (contract) => contract.vehicle?.display_name ?? '', render: (contract) => contract.vehicle?.display_name ?? '' },
+        { key: 'client', label: 'NOM & PRENOM', sortValue: (contract) => contract.client?.display_name ?? '', render: (contract) => contract.client?.display_name ?? '' },
+        { key: 'phone', label: 'TELEPHONE', width: '140px', render: (contract) => contract.client?.phone ?? '' },
+        { key: 'remaining', label: 'RESTE', width: '110px', render: (contract) => amount(contract.remaining_calculated) },
         {
-            key: 'reference',
-            label: 'Référence',
-            width: '100px',
-            render: (contract) => (
-                <div>
-                    <div className="font-bold text-brand-800">{contract.reference}</div>
-                </div>
-            ),
-        },
-        { key: 'client', label: 'Client', width: 'minmax(110px, 1fr)', sortValue: (contract) => contract.client?.display_name ?? '', render: (contract) => contract.client?.display_name ?? 'Non renseigné' },
-        {
-            key: 'vehicle',
-            label: 'Voiture',
-            width: '150px',
-            sortValue: (contract) => contract.vehicle?.display_name ?? '',
-            render: (contract) => contract.vehicle?.display_name ?? <span className="text-amber-800">Incomplet</span>,
-        },
-        { key: 'departure', label: 'Départ', width: '95px', sortValue: (contract) => contract.departure_at, render: (contract) => date(contract.departure_at) },
-        { key: 'return', label: 'Retour', width: '95px', sortValue: (contract) => contract.return_at, render: (contract) => date(contract.return_at) },
-        { key: 'total', label: 'Total', width: '110px', sortValue: (contract) => Number(contract.total_amount), render: (contract) => <span className="whitespace-nowrap text-[13px] font-semibold">{money(contract.total_amount)}</span> },
-        { key: 'paid', label: 'Payé', width: '124px', sortValue: (contract) => Number(contract.paid_amount_calculated ?? 0), render: (contract) => <span className="whitespace-nowrap text-[13px]">{money(contract.paid_amount_calculated ?? 0)}</span> },
-        { key: 'remaining', label: 'Reste', width: '124px', sortValue: (contract) => Number(contract.remaining_calculated ?? 0), render: (contract) => <span className="whitespace-nowrap text-[13px]">{money(contract.remaining_calculated ?? 0)}</span> },
-        {
-            key: 'status',
-            label: 'Statut',
-            width: '80px',
-            sortValue: (contract) => contract.returned ? 'Réceptionné' : 'En cours',
-            render: (contract) => <Badge tone={statusTone(contract.returned ? 'returned' : 'en_location')}>{contract.returned ? 'Réceptionné' : 'En cours'}</Badge>,
+            key: 'return_state',
+            label: 'ETAT',
+            width: '120px',
+            render: (contract) => {
+                const state = returnState(contract.return_at, today, tomorrow, afterTomorrow);
+                return <span className={`al-return-state al-return-state-${state.tone}`}>{state.label}</span>;
+            },
         },
     ];
 
+    const rentalColumns: VirtualColumn<Contract>[] = [
+        { key: 'row_number', label: 'N°', width: '60px', sortValue: (contract) => contract.row_number ?? 0, render: (contract) => contract.row_number },
+        { key: 'brand', label: 'MARQUE', width: '100px', sortValue: (contract) => contract.vehicle?.brand ?? '', render: (contract) => contract.vehicle?.brand ?? '' },
+        { key: 'model', label: 'TYPE', sortValue: (contract) => contract.vehicle?.model ?? '', render: (contract) => contract.vehicle?.model ?? contract.vehicle?.display_name ?? '' },
+        { key: 'color', label: 'COULEUR', width: '100px', sortValue: (contract) => contract.vehicle?.color ?? '', render: (contract) => contract.vehicle?.color ?? '' },
+        { key: 'category', label: 'CATEGORIE', width: '110px', sortValue: (contract) => contract.vehicle?.category ?? '', render: (contract) => contract.vehicle?.category ?? '' },
+        { key: 'plate', label: 'N° IMMATRICULATION', width: '220px', sortValue: (contract) => contract.vehicle?.plate_number ?? '', render: (contract) => contract.vehicle?.plate_number ?? '' },
+        { key: 'client', label: 'NOM & PRENOM', sortValue: (contract) => contract.client?.display_name ?? '', render: (contract) => contract.client?.display_name ?? '' },
+        { key: 'phone', label: 'TELEPHONE', width: '140px', render: (contract) => contract.client?.phone ?? '' },
+    ];
+
+    const fields = returnsView
+        ? [
+            { name: 'date', label: 'Date (aaaa-mm-jj)' },
+            { name: 'heure', label: 'Heure' },
+            { name: 'voiture', label: 'Voiture' },
+            { name: 'nom', label: 'Nom' },
+            { name: 'prenom', label: 'Prénom' },
+            { name: 'tel', label: 'Tél.' },
+        ]
+        : rentalView
+            ? [
+                { name: 'numero', label: 'N°', width: '50px' },
+                { name: 'marque', label: 'Marque' },
+                { name: 'type', label: 'Type' },
+                { name: 'couleur', label: 'Couleur' },
+                { name: 'num_immatr', label: 'Matricule' },
+            ]
+            : [
+                { name: 'date', label: 'Date (aaaa-mm-jj)' },
+                { name: 'heure', label: 'Heure' },
+                { name: 'nom', label: 'Nom' },
+                { name: 'prenom', label: 'Prénom' },
+                { name: 'voiture', label: 'Voiture' },
+            ];
+
+    const columns = returnsView ? returnsColumns : rentalView ? rentalColumns : contractColumns;
+    const rows = rentalView ? contracts.map((contract, index) => ({ ...contract, row_number: index + 1 })) : contracts;
+
     return (
         <AppLayout>
-            <Head title="Locations" />
-            <PageHeader
-                title="Locations"
-                
-                actions={<><a href={exportUrl('contracts', filters)} className="tc-btn-secondary">Exporter CSV</a><Link href="/contracts/create" className="tc-btn-primary"><Plus className="h-4 w-4" /> Nouvelle location</Link></>}
-            />
+            <Head title={overdueView ? 'En retard' : returnsView ? 'En retour' : rentalView ? 'En location' : 'Contrat'} />
 
-            <div className="mb-4 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-                <StatCard label="Retour dépassé" value={number(counters?.overdue ?? 0)} icon={<AlertTriangle className="h-5 w-5" />} tone="rose" href="/contracts?status=overdue" testId="stat-overdue" />
-                <StatCard label="Retours du mois" value={number(counters?.due_month ?? 0)} icon={<CalendarClock className="h-5 w-5" />} tone="amber" href="/contracts?due=month" testId="stat-due-month" />
-                <StatCard label="En location" value={number(counters?.in_rental ?? 0)} icon={<CarFront className="h-5 w-5" />} tone="emerald" href="/contracts?status=open" testId="stat-in-rental" />
-            </div>
-
-            <FilterBar action="/contracts" filters={filters} searchPlaceholder="Référence, client, téléphone, plaque, montant" resultCount={contracts.length}>
-                <select name="status" aria-label="Statut" defaultValue={filters.status ?? ''} className="tc-input">
-                    <option value="">Tous les statuts</option>
-                    <option value="open">En cours</option>
-                    <option value="returned">Réceptionnés</option>
-                    <option value="overdue">Retour dépassé</option>
-                </select>
-                <select name="due" aria-label="Échéance" defaultValue={filters.due ?? ''} className="tc-input">
-                    <option value="">Tous les retours</option>
-                    <option value="today">Aujourd’hui</option>
-                    <option value="tomorrow">Demain</option>
-                    <option value="after_tomorrow">Après-demain</option>
-                    <option value="month">Retours du mois</option>
-                </select>
-                <label className="text-xs text-slate-500">Départ du<input type="date" aria-label="Date de début" name="date_from" defaultValue={filters.date_from ?? ''} className="tc-input mt-1" /></label>
-                <label className="text-xs text-slate-500">Départ au<input type="date" aria-label="Date de fin" name="date_to" defaultValue={filters.date_to ?? ''} className="tc-input mt-1" /></label>
+            <FilterBar action="/contracts" filters={filters} fields={fields}>
+                {status ? <input type="hidden" name="status" value={status} /> : null}
+                {filters.view ? <input type="hidden" name="view" value={filters.view} /> : null}
             </FilterBar>
 
+            {returnsView && (
+                <>
+                    <div className="al-return-heading">
+                        <strong>{overdueView ? 'Retours en retard' : <>Retours du {new Intl.DateTimeFormat('fr-FR', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric', timeZone: 'Africa/Casablanca' }).format(new Date())}</>}</strong>
+                        <span>
+                            {overdueView
+                                ? `${returnGroups.late} contrats en retard`
+                                : `${returnGroups.today} aujourd'hui, ${returnGroups.tomorrow} demain, ${returnGroups.after} après-demain`}
+                        </span>
+                    </div>
+                    {!overdueView && (
+                        <div className="al-list-tabs al-return-tabs">
+                            {([
+                                ['all', 'Tous', returnGroups.all],
+                                ['today', "Aujourd'hui", returnGroups.today],
+                                ['tomorrow', 'Demain', returnGroups.tomorrow],
+                                ['after', 'Après-demain', returnGroups.after],
+                                ['upcoming', 'À venir', returnGroups.upcoming],
+                            ] as const).map(([key, label, count]) => (
+                                <button key={key} type="button" className={returnFilter === key ? 'active' : ''} onClick={() => setReturnFilter(key)}>
+                                    {label} <span className="al-return-count">{count}</span>
+                                </button>
+                            ))}
+                        </div>
+                    )}
+                </>
+            )}
+
+            {!returnsView && !rentalView && (
+                <div className="al-list-tabs">
+                    <Link href="/contracts" className={status === '' ? 'active' : ''}>Tous</Link>
+                    <span>|</span>
+                    <Link href="/contracts?status=open" className={status === 'open' ? 'active' : ''}>Contrat en cours</Link>
+                    <span>|</span>
+                    <Link href="/contracts?status=overdue" className={status === 'overdue' ? 'active' : ''}>Contrat depassé</Link>
+                </div>
+            )}
+
             <VirtualDataList
-                rows={contracts}
+                rows={returnsView ? returnRows : rows}
                 columns={columns}
                 rowKey={(contract) => contract.id}
                 href={(contract) => `/contracts/${contract.id}`}
-                totalLabel={`${contracts.length} locations`}
-                actionsWidth="100px"
-                defaultHidden={['paid']}
-                actions={(contract) => (
-                    <>
-                        <Link href={`/contracts/${contract.id}`} className="text-xs font-semibold text-brand-700">Voir</Link>
-                        <a href={`/contracts/${contract.id}/pdf`} className="text-xs font-semibold text-slate-500">PDF</a>
-                    </>
-                )}
-                empty={<EmptyState title="Aucune location" description="Ajustez les filtres ou créez une nouvelle location." />}
+                totalLabel={`${contracts.length} ${overdueView ? 'retards' : 'contrats'}`}
+                actions={returnsView ? undefined : (contract) => <Link href={`/contracts/${contract.id}/edit`} className="al-link-modifier">Modifier</Link>}
+                empty="Aucun résultat"
             />
         </AppLayout>
     );
 }
-
-
-
-

@@ -48,12 +48,32 @@ class ClientController extends Controller
         if ($type = $request->string('type')->toString()) {
             $query->where('clients.client_type', $type);
         }
+        if ($nom = trim($request->string('nom')->toString())) {
+            $query->where('clients.last_name', 'ilike', "%{$nom}%");
+        }
+        if ($prenom = trim($request->string('prenom')->toString())) {
+            $query->where('clients.first_name', 'ilike', "%{$prenom}%");
+        }
+        if ($tel = trim($request->string('tel')->toString())) {
+            $query->where('clients.phone', 'ilike', "%{$tel}%");
+        }
+        if ($adresse = trim($request->string('adresse')->toString())) {
+            $query->where('clients.address', 'ilike', "%{$adresse}%");
+        }
+        if ($source = trim($request->string('source')->toString())) {
+            $query->whereExists(function ($sub) use ($source) {
+                $sub->selectRaw('1')
+                    ->from('lead_sources')
+                    ->whereColumn('lead_sources.id', 'clients.source_id')
+                    ->where('lead_sources.name', 'ilike', "%{$source}%");
+            });
+        }
 
         $clients = $query->orderBy('clients.display_name')->get();
 
         return Inertia::render('Clients/Index', [
             'clients' => $clients,
-            'filters' => $request->only(['q', 'status', 'type']),
+            'filters' => $request->only(['q', 'status', 'type', 'nom', 'prenom', 'tel', 'adresse', 'source']),
         ]);
     }
 
@@ -69,16 +89,29 @@ class ClientController extends Controller
             $value = (string) $value;
             $ascii = @iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $value);
             $value = $ascii !== false ? $ascii : $value;
+
             return trim(preg_replace('/[^a-z0-9]+/', ' ', strtolower($value)) ?? '');
         };
         $normalizedQuery = $normalize($q);
         $digitsQuery = preg_replace('/\D+/', '', $q) ?? '';
-        $candidates = Client::query()->get(['id', 'display_name', 'phone', 'email', 'address', 'identity_number']);
+        $candidates = Client::query()->get(['id', 'display_name', 'first_name', 'last_name', 'phone', 'email', 'address', 'identity_number', 'identity_document_type', 'identity_expiry_date', 'license_number', 'country_id']);
         $scored = $candidates->map(function (Client $client) use ($normalizedQuery, $digitsQuery, $normalize) {
             $name = $normalize($client->display_name);
+            $firstName = $normalize($client->first_name);
+            $lastName = $normalize($client->last_name);
+            $variants = array_values(array_filter([
+                $name,
+                trim($firstName.' '.$lastName),
+                trim($lastName.' '.$firstName),
+                $firstName,
+                $lastName,
+            ]));
             $phone = preg_replace('/\D+/', '', (string) $client->phone) ?? '';
             $score = 0.0;
-            if ($normalizedQuery !== '' && str_contains($name, $normalizedQuery)) {
+            $nameMatch = $normalizedQuery !== '' && collect($variants)->contains(
+                fn (string $variant) => $variant !== '' && str_contains($variant, $normalizedQuery),
+            );
+            if ($nameMatch) {
                 $score = 100 - (strlen($name) - strlen($normalizedQuery)) / 100;
             } elseif ($digitsQuery !== '' && $phone !== '' && str_contains($phone, $digitsQuery)) {
                 $score = 95;
@@ -86,10 +119,12 @@ class ClientController extends Controller
                 similar_text($normalizedQuery, $name, $percent);
                 $score = $percent >= 45 ? $percent : 0;
             }
+
             return ['client' => $client, 'score' => $score];
         })->filter(fn (array $row) => $row['score'] > 0)->sortByDesc('score')->take(20);
 
         $ids = $scored->pluck('client.id')->all();
+        $countryNames = DB::table('countries')->pluck('name', 'id');
         $lastRentals = DB::table('contracts')
             ->leftJoin('vehicles', 'vehicles.id', '=', 'contracts.vehicle_id')
             ->whereIn('contracts.client_id', $ids)
@@ -99,16 +134,25 @@ class ClientController extends Controller
             ->map(fn ($rows) => $rows->first());
 
         return response()->json([
-            'results' => $scored->values()->map(function (array $row) use ($lastRentals) {
+            'results' => $scored->values()->map(function (array $row) use ($lastRentals, $countryNames) {
                 $client = $row['client'];
                 $last = $lastRentals->get($client->id);
+
                 return [
                     'id' => $client->id,
                     'display_name' => $client->display_name,
+                    'first_name' => $client->first_name,
+                    'last_name' => $client->last_name,
                     'phone' => $client->phone,
                     'address' => $client->address,
                     'email' => $client->email,
-                    'last_rental' => $last ? trim(($last->vehicle_name ?? 'Voiture') . ', ' . substr((string) $last->departure_at, 0, 10)) : null,
+                    'identity_number' => $client->identity_number,
+                    'identity_document_type' => $client->identity_document_type,
+                    'identity_expiry_date' => $client->identity_expiry_date,
+                    'license_number' => $client->license_number,
+                    'country_id' => $client->country_id,
+                    'country_name' => $countryNames[$client->country_id] ?? null,
+                    'last_rental' => $last ? trim(($last->vehicle_name ?? 'Voiture').', '.substr((string) $last->departure_at, 0, 10)) : null,
                 ];
             }),
         ]);
@@ -121,6 +165,76 @@ class ClientController extends Controller
             ->selectRaw('count(*) as contracts, coalesce(sum(total_amount),0) as total')
             ->first();
 
+        $contracts = $client->contracts;
+        $contractIds = $contracts->pluck('id')->all();
+        $contractsById = $contracts->keyBy('id');
+        $rawPayments = DB::table('payments')
+            ->whereIn('contract_id', $contractIds)
+            ->orderBy('created_at')
+            ->get();
+        $paymentsByContract = $rawPayments->groupBy('contract_id');
+        $invoiceRows = DB::table('invoices')
+            ->where('client_id', $client->id)
+            ->orderByDesc('issued_at')
+            ->get(['id', 'reference', 'file_reference', 'issued_at', 'due_date', 'total', 'status']);
+
+        $paymentHistory = $rawPayments->map(function ($payment) use ($contractsById, $paymentsByContract, $invoiceRows) {
+            $contract = $contractsById->get($payment->contract_id);
+            $group = $paymentsByContract->get($payment->contract_id, collect());
+            $isFirst = $group->first()?->id === $payment->id;
+            $isLast = $group->last()?->id === $payment->id;
+            $contractTotal = (float) ($contract?->total_amount ?? 0);
+            $paidOnContract = (float) $group->sum('amount');
+            $status = match (true) {
+                (float) $payment->amount < 0 => 'Remboursement',
+                $payment->payment_status === 'annule' => 'Annulé',
+                $contract && $isFirst && $group->count() > 1 => 'Avance reçue',
+                $contract && $group->count() === 1 && $paidOnContract >= $contractTotal => 'Paiement complet',
+                $contract && $isFirst && $paidOnContract >= $contractTotal => 'Paiement complet',
+                $isLast && $contract && $paidOnContract >= $contractTotal => 'Paiement complet',
+                default => 'Paiement partiel',
+            };
+            $invoiceReferences = $contract
+                ? $invoiceRows->where('file_reference', $contract->reference)->pluck('reference')->all()
+                : [];
+
+            return [
+                'id' => $payment->id,
+                'date' => $payment->created_at,
+                'amount' => (float) $payment->amount,
+                'method' => $payment->payment_method,
+                'status' => $status,
+                'payment_status' => $payment->payment_status,
+                'reference' => $payment->display_name,
+                'contract_id' => $contract?->id,
+                'contract_reference' => $contract?->reference,
+                'contract_total' => $contractTotal,
+                'contract_paid' => $paidOnContract,
+                'contract_remaining' => max(0, $contractTotal - $paidOnContract),
+                'invoice_references' => $invoiceReferences,
+            ];
+        })->values();
+
+        $contractsTotal = (float) $contracts->sum('total_amount');
+        $paidTotal = (float) $rawPayments->sum('amount');
+        $remainingTotal = max(0, $contractsTotal - $paidTotal);
+        $overpaid = max(0, $paidTotal - $contractsTotal);
+        $advancesTotal = $paymentsByContract
+            ->filter(fn ($group) => $group->count() > 1)
+            ->sum(fn ($group) => (float) $group->first()->amount);
+
+        $paymentSummary = [
+            'contracts_total' => $contractsTotal,
+            'paid_total' => $paidTotal,
+            'remaining_total' => $remainingTotal,
+            'overpaid' => $overpaid,
+            'payments_count' => $rawPayments->count(),
+            'advances_total' => (float) $advancesTotal,
+            'invoices_total' => (float) $invoiceRows->sum('total'),
+            'invoices_count' => $invoiceRows->count(),
+            'invoices_unlinked' => $invoiceRows->filter(fn ($invoice) => blank($invoice->file_reference))->count(),
+        ];
+
         $documents = Media::where('mediable_type', 'slv_locataires')
             ->where('mediable_id', $client->id)
             ->orderByDesc('created_at')
@@ -131,6 +245,9 @@ class ClientController extends Controller
             'totals' => $totals,
             'documents' => $documents,
             'timeline' => app(TimelineService::class)->forClient($client->id),
+            'paymentHistory' => $paymentHistory,
+            'paymentSummary' => $paymentSummary,
+            'clientInvoices' => $invoiceRows,
         ]);
     }
 
@@ -157,6 +274,7 @@ class ClientController extends Controller
     public function edit(Client $client)
     {
         $this->authorizeRecord($client, 'update');
+
         return Inertia::render('Clients/Form', [
             'client' => $client,
             'countries' => Country::orderBy('name')->get(['id', 'name']),
@@ -242,4 +360,3 @@ class ClientController extends Controller
         ]);
     }
 }
-

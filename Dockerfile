@@ -7,10 +7,12 @@ RUN composer install --no-dev --no-interaction --prefer-dist --no-scripts --no-a
 COPY . .
 RUN composer dump-autoload --no-dev --optimize --no-scripts
 
+FROM node:22-bookworm-slim AS node_runtime
+
 FROM php:8.4-apache
 
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends libicu-dev libzip-dev libpng-dev libjpeg62-turbo-dev libfreetype6-dev libpq-dev libonig-dev \
+    && apt-get install -y --no-install-recommends libicu-dev libzip-dev libpng-dev libjpeg62-turbo-dev libfreetype6-dev libpq-dev libonig-dev ca-certificates \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install -j2 pdo_pgsql pgsql mbstring bcmath exif gd zip intl opcache \
     && a2enmod rewrite headers \
@@ -19,6 +21,7 @@ RUN apt-get update \
 WORKDIR /var/www/html
 
 COPY --from=vendor /app/vendor ./vendor
+COPY --from=node_runtime /usr/local/bin/node /usr/local/bin/node
 COPY . .
 COPY docker/php.ini /usr/local/etc/php/conf.d/99-tanamecar.ini
 COPY docker/apache.conf /etc/apache2/sites-available/000-default.conf

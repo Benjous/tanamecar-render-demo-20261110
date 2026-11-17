@@ -1,4 +1,4 @@
-﻿import { Head, Link, useForm } from '@inertiajs/react';
+import { Head, Link, useForm } from '@inertiajs/react';
 import { ArrowLeft, Save } from 'lucide-react';
 import AppLayout from '@/Layouts/AppLayout';
 import { Field, PageHeader } from '@/components/ui';

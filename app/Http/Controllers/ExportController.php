@@ -6,9 +6,23 @@ use App\Services\ArchiveService;
 use App\Services\SearchService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Inertia\Inertia;
 
 class ExportController extends Controller
 {
+    public function index()
+    {
+        return Inertia::render('Exports/Index', [
+            'exports' => [
+                ['label' => 'Locations', 'description' => 'Contrats, clients, vehicules, dates et montants.', 'href' => '/exports/contracts.csv'],
+                ['label' => 'Clients', 'description' => 'Coordonnees et statut des clients.', 'href' => '/exports/clients.csv'],
+                ['label' => 'Vehicules', 'description' => 'Parc, plaques, statut et tarifs.', 'href' => '/exports/vehicles.csv'],
+                ['label' => 'Paiements', 'description' => 'Encaissements et moyens de paiement.', 'href' => '/exports/payments.csv'],
+                ['label' => 'Factures', 'description' => 'References, dates, statuts et totaux.', 'href' => '/exports/invoices.csv'],
+            ],
+        ]);
+    }
+
     public function csv(Request $request, string $entity, SearchService $search)
     {
         $map = [

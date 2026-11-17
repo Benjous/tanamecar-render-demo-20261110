@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\SubRental;
+use App\Models\Vehicle;
 use App\Services\SearchService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -11,64 +12,73 @@ class SubRentalController extends Controller
 {
     public function index(Request $request, SearchService $search)
     {
-        $query = SubRental::query()->with('vehicle:id,display_name,plate_number');
+        $query = Vehicle::query()
+            ->with([
+                'lessor:id,name',
+                'brand:id,name',
+                'model:id,name',
+                'category:id,name',
+                'contracts' => fn ($contracts) => $contracts->where('returned', false)->orderByDesc('departure_at'),
+                'contracts.client:id,display_name',
+            ])
+            ->where('operating_mode', 'sous_location');
+
         $q = trim($request->string('q')->toString());
         if ($q !== '') {
-            $query->where(function ($builder) use ($q, $search) {
-                $search->apply($builder, [
-                    'sub_rentals.client_name',
-                    'sub_rentals.vehicle_name',
-                    'sub_rentals.company',
-                    'sub_rentals.source_id',
-                    'sub_rentals.source_row',
-                    'sub_rentals.days_recorded',
-                    'sub_rentals.rate_recorded',
-                    'sub_rentals.total_recorded',
-                    'sub_rentals.price_recorded',
-                    'sub_rentals.profit_recorded',
-                    'sub_rentals.advance_recorded',
-                    'sub_rentals.credit_recorded',
-                ], $q);
-                $builder->orWhereHas('vehicle', fn ($vehicle) => $search->apply($vehicle, ['display_name', 'plate_number'], $q));
+            $query->where(function ($builder) use ($q) {
+                $builder->where('vehicles.display_name', 'ilike', "%{$q}%")
+                    ->orWhere('vehicles.plate_number', 'ilike', "%{$q}%")
+                    ->orWhereHas('lessor', fn ($lessor) => $lessor->where('name', 'ilike', "%{$q}%"));
             });
         }
-        if ($match = $request->string('match')->toString()) {
-            if ($match === 'matched') {
-                $query->whereNotNull('vehicle_id');
-            } elseif ($match === 'unmatched') {
-                $query->whereNull('vehicle_id');
+        if ($numero = trim($request->string('numero')->toString())) {
+            if (ctype_digit($numero)) {
+                $query->whereKey((int) $numero);
             }
         }
-        $totalsQuery = clone $query;
-        $countsQuery = clone $query;
-        $rows = $query->orderBy('source_row')->get();
+        if ($voiture = trim($request->string('voiture')->toString())) {
+            $query->where(function ($builder) use ($voiture) {
+                $builder->where('vehicles.display_name', 'ilike', "%{$voiture}%")
+                    ->orWhere('vehicles.plate_number', 'ilike', "%{$voiture}%");
+            });
+        }
+        if ($societe = trim($request->string('societe')->toString())) {
+            $query->whereHas('lessor', fn ($lessor) => $lessor->where('name', 'ilike', "%{$societe}%"));
+        }
+        if ($statut = trim($request->string('statut')->toString())) {
+            $query->where('vehicles.status', $statut);
+        }
 
-        $total = (float) $totalsQuery->sum('total_recorded');
-        $priceQuery = clone $totalsQuery;
-        $price = (float) $priceQuery->sum('price_recorded');
-        $profitQuery = clone $totalsQuery;
-        $profit = (float) $profitQuery->sum('profit_recorded');
-        $advanceQuery = clone $totalsQuery;
-        $advance = (float) $advanceQuery->sum('advance_recorded');
-        $creditQuery = clone $totalsQuery;
-        $credit = (float) $creditQuery->sum('credit_recorded');
-        $totalRowsQuery = clone $countsQuery;
-        $totalRows = $totalRowsQuery->count();
-        $matchedRowsQuery = clone $countsQuery;
-        $matchedRows = $matchedRowsQuery->whereNotNull('vehicle_id')->count();
+        $vehicles = $query->orderBy('display_name')->get();
+
+        $rows = $vehicles->map(function (Vehicle $vehicle) {
+            $contract = $vehicle->contracts->first();
+
+            return [
+                'id' => $vehicle->id,
+                'vehicle_name' => $vehicle->display_name,
+                'plate_number' => $vehicle->plate_number,
+                'company' => $vehicle->lessor?->name,
+                'status' => $vehicle->status,
+                'operating_mode' => $vehicle->operating_mode,
+                'daily_rate' => $vehicle->daily_rate,
+                'km' => $vehicle->km,
+                'brand' => $vehicle->brand?->name,
+                'model' => $vehicle->model?->name,
+                'category' => $vehicle->category?->name,
+                'contract_reference' => $contract?->reference,
+                'client_name' => $contract?->client?->display_name,
+                'return_at' => $contract?->return_at,
+            ];
+        })->values();
 
         return Inertia::render('SubRentals/Index', [
             'rows' => $rows,
-            'filters' => $request->only(['q', 'match']),
-            'totals' => [
-                'total' => round($total, 2),
-                'price' => round($price, 2),
-                'profit' => round($profit, 2),
-                'advance' => round($advance, 2),
-                'credit' => round($credit, 2),
+            'filters' => $request->only(['q', 'numero', 'voiture', 'societe', 'statut']),
+            'counts' => [
+                'total' => $rows->count(),
+                'in_contract' => $rows->filter(fn ($row) => $row['contract_reference'] !== null)->count(),
             ],
-            'documentedGap' => 7312,
-            'counts' => ['total' => $totalRows, 'matched' => $matchedRows],
         ]);
     }
 
@@ -99,6 +109,7 @@ class SubRentalController extends Controller
             'credit_current' => ['nullable', 'numeric'],
         ]);
         $subRental->update([...$data, 'modified_by' => $request->user()->id, 'modified_at' => now()]);
+
         return redirect()->route('sub-rentals.show', $subRental)->with('success', 'Sous-location mise à jour.');
     }
 }

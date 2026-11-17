@@ -8,8 +8,13 @@ class AuditService
 {
     public function log(string $action, ?string $entityType = null, ?int $entityId = null, ?array $before = null, ?array $after = null): void
     {
+        $impersonatorId = request()->hasSession() ? request()->session()->get('impersonator_id') : null;
+        $impersonatorName = request()->hasSession() ? request()->session()->get('impersonator_name') : null;
+
         DB::table('activity_log')->insert([
             'user_id' => auth()->id(),
+            'impersonator_id' => $impersonatorId,
+            'impersonator_name' => $impersonatorName,
             'action' => $action,
             'entity_type' => $entityType,
             'entity_id' => $entityId,

@@ -4,17 +4,14 @@ import { createPortal } from 'react-dom';
 import { AlertCircle, CheckCircle2, Inbox, Printer, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
-export function PageHeader({ title, actions }: { title: string; subtitle?: string; actions?: ReactNode }) {
+export function PageHeader({ title, subtitle, actions }: { title: string; subtitle?: string; actions?: ReactNode }) {
     return (
-        <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-                <div className="mb-2 flex items-center gap-2">
-                    <span className="h-1.5 w-9 rounded-full bg-accent-500" />
-                    <span className="text-[10px] font-bold uppercase tracking-[0.22em] text-brand-700">TANAME CAR</span>
-                </div>
-                <h1 className="text-2xl font-black tracking-tight text-brand-900 sm:text-3xl">{title}</h1>
+        <div className="workspace-page-toolbar">
+            <div className="workspace-page-heading">
+                <h1 className="workspace-page-title">{title}</h1>
+                {subtitle && <div className="workspace-page-subtitle">{subtitle}</div>}
             </div>
-            {actions && <div className="flex flex-wrap items-center gap-2">{actions}</div>}
+            {actions && <div className="workspace-page-actions">{actions}</div>}
         </div>
     );
 }
@@ -31,33 +28,19 @@ export function StatCard({
     testId?: string;
 }) {
     const tones: Record<string, string> = {
-        brand: 'bg-brand-50 text-brand-700',
-        emerald: 'bg-emerald-50 text-emerald-700',
-        amber: 'bg-amber-50 text-amber-700',
-        rose: 'bg-rose-50 text-rose-700',
-        slate: 'bg-slate-100 text-slate-600',
+        brand: 'workspace-counter-brand',
+        emerald: 'workspace-counter-green',
+        amber: 'workspace-counter-orange',
+        rose: 'workspace-counter-red',
+        slate: 'workspace-counter-slate',
     };
-    const bars: Record<string, string> = {
-        brand: 'bg-brand-600',
-        emerald: 'bg-emerald-500',
-        amber: 'bg-amber-500',
-        rose: 'bg-rose-500',
-        slate: 'bg-slate-400',
-    };
-    const className = cn(
-        'tc-card group relative block min-w-0 overflow-hidden p-5 transition duration-150',
-        href && 'cursor-pointer hover:-translate-y-0.5 hover:border-brand-300 hover:shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-400',
-    );
+    const className = cn('workspace-counter', tones[tone]);
     const content = (
         <>
-            <span className={cn('absolute inset-x-0 top-0 h-1', bars[tone])} />
-            <div className="flex items-start justify-between gap-3">
-                <div className="min-w-0 flex-1">
-                    <div className="text-[11px] font-bold uppercase tracking-wider text-brand-800">{label}</div>
-                    <div className="mt-2 whitespace-nowrap text-xl font-black leading-tight tracking-tight text-brand-900">{value}</div>
-                </div>
-                {icon && <div className={cn('flex h-10 w-10 shrink-0 items-center justify-center rounded-xl', tones[tone])}>{icon}</div>}
-            </div>
+            {icon && <span className="workspace-counter-icon">{icon}</span>}
+            <span className="workspace-counter-label">{label}</span>
+            <strong className="workspace-counter-value">{value}</strong>
+            {hint && <span className="workspace-counter-hint">{hint}</span>}
         </>
     );
 
@@ -69,22 +52,20 @@ export function StatCard({
         );
     }
 
-    return <div className={className}>{content}</div>;
+    return <div className={className} data-testid={testId}>{content}</div>;
 }
 
 export function Badge({ children, tone = 'slate' }: { children: ReactNode; tone?: string }) {
-    return <span className={cn('inline-flex items-center rounded-full border px-2.5 py-0.5 text-[11px] font-semibold', tone)}>{children}</span>;
+    return <span className={cn('workspace-badge', tone)}>{children}</span>;
 }
 
-export function EmptyState({ title = 'Aucune donnée', description, action }: { title?: string; description?: string; action?: ReactNode }) {
+export function EmptyState({ title = 'Aucune donnee', description, action }: { title?: string; description?: string; action?: ReactNode }) {
     return (
-        <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-slate-200 bg-white px-6 py-14 text-center">
-            <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-100 text-slate-400">
-                <Inbox className="h-6 w-6" />
-            </div>
-            <div className="text-sm font-semibold text-slate-700">{title}</div>
-            {description && <div className="mt-1 max-w-md text-xs text-slate-500">{description}</div>}
-            {action && <div className="mt-4">{action}</div>}
+        <div className="workspace-empty">
+            <div className="workspace-empty-icon"><Inbox className="h-5 w-5" /></div>
+            <div className="workspace-empty-title">{title}</div>
+            {description && <div className="workspace-empty-description">{description}</div>}
+            {action && <div className="mt-3">{action}</div>}
         </div>
     );
 }
@@ -98,22 +79,22 @@ export function Modal({ open, onClose, title, children, footer }: { open: boolea
     return createPortal(
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
             <div className="absolute inset-0 bg-slate-900/40" onClick={onClose} />
-            <div className="relative w-full max-w-lg rounded-2xl bg-white shadow-xl">
-                <div className="flex items-center justify-between border-b border-slate-100 px-5 py-4">
-                    <h3 className="text-sm font-bold text-slate-900">{title}</h3>
-                    <button onClick={onClose} className="rounded-lg p-1 text-slate-400 hover:bg-slate-100">
+            <div className="relative w-full max-w-lg border border-slate-400 bg-white shadow-xl">
+                <div className="flex items-center justify-between border-b border-slate-300 bg-slate-100 px-4 py-2">
+                    <h3 className="text-sm font-bold text-slate-800">{title}</h3>
+                    <button onClick={onClose} className="p-1 text-slate-500 hover:bg-slate-200">
                         <X className="h-4 w-4" />
                     </button>
                 </div>
-                <div className="px-5 py-4">{children}</div>
-                {footer && <div className="flex justify-end gap-2 border-t border-slate-100 px-5 py-3">{footer}</div>}
+                <div className="px-4 py-4">{children}</div>
+                {footer && <div className="flex justify-end gap-2 border-t border-slate-200 bg-slate-50 px-4 py-2">{footer}</div>}
             </div>
         </div>,
         document.body,
     );
 }
 
-export function ConfirmButton({ label, onConfirm, variant = 'danger', title = 'Confirmer l\'action', description = 'Cette action est définitive. Voulez-vous continuer ?' }: { label: ReactNode; onConfirm: () => void; variant?: 'danger' | 'secondary'; title?: string; description?: string }) {
+export function ConfirmButton({ label, onConfirm, variant = 'danger', title = 'Confirmer l\'action', description = 'Cette action est definitive. Voulez-vous continuer ?' }: { label: ReactNode; onConfirm: () => void; variant?: 'danger' | 'secondary'; title?: string; description?: string }) {
     const [open, setOpen] = useState(false);
     return (
         <>
@@ -154,5 +135,5 @@ export function Field({ label, error, children, hint }: { label: string; error?:
 
 export function SuccessBanner({ message }: { message?: string | null }) {
     if (!message) return null;
-    return <div className="mb-4 flex items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800"><CheckCircle2 className="h-4 w-4" />{message}</div>;
+    return <div className="workspace-flash workspace-flash-success"><CheckCircle2 className="h-4 w-4" />{message}</div>;
 }

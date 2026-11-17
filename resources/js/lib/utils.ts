@@ -13,9 +13,20 @@ export function number(value: number | string | null | undefined): string {
     return new Intl.NumberFormat('fr-FR').format(Number(value ?? 0));
 }
 
+/** Montant sans devise, format des tableaux reference. */
+export function amount(value: number | string | null | undefined): string {
+    return new Intl.NumberFormat('fr-FR', { maximumFractionDigits: 2 }).format(Number(value ?? 0));
+}
+
 export function date(value: string | null | undefined): string {
     if (!value) return 'Non renseigné';
     return new Intl.DateTimeFormat('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' }).format(new Date(value));
+}
+
+/** Date au format de la référence reference : aaaa-mm-jj. */
+export function isoDate(value: string | null | undefined): string {
+    if (!value) return '';
+    return String(value).slice(0, 10);
 }
 
 export function dateTime(value: string | null | undefined): string {
